@@ -255,7 +255,8 @@ src/tk_cipher/
 ├── prng.py          # TKRand
 ├── sbox.py          # generate S-box + filter DU/NL + inverse
 ├── key_schedule.py  # 17 round keys
-├── cipher.py        # class TKCipher: encrypt_block / decrypt_block
+├── rounds.py        # 5 operasi ronde + inverse (dipakai cipher dan key schedule)
+├── cipher.py        # class TKCipher(key, rounds=16): encrypt_block / decrypt_block
 ├── modes.py         # ECB, CBC, CFB, OFB, CTR
 ├── padding.py       # PKCS#7 pad/unpad
 ├── kdf.py           # derive K_enc, K_mac
@@ -271,9 +272,9 @@ dist/                # executable Linux + Windows
 ```
 
 - `src/`: **stdlib saja** (`os`, `struct`, `argparse`, `pathlib`). Tidak ada `hashlib`, `hmac`, `random`, `secrets`, `cryptography`, dll.
-- `analysis/`: `numpy`, `matplotlib` (dipisah di `requirements-analysis.txt`).
-- `tests/`: `pytest` (dev only).
-- CI/cek manual: grep import terlarang di `src/` sebagai salah satu test.
+- `analysis/`: `numpy`, `matplotlib` (dependency group `analysis` di `pyproject.toml`, dikelola uv).
+- `tests/`: `pytest` (dependency group `dev`, dikelola uv). Setup: `uv sync --all-groups`, test: `uv run pytest`.
+- Cek import terlarang di `src/` jadi salah satu test. Tanpa CI, semua test dijalankan manual di Linux dan Windows.
 
 ### 8.1 README
 
@@ -311,6 +312,6 @@ Wajib berisi: (1) nama TK-Cipher + deskripsi singkat, (2) tech stack, (3) depend
 ## 10. Urutan Implementasi
 
 Kerjakan bertahap. Setiap langkah punya unit test sebelum lanjut:
-`prng => sbox => key_schedule => cipher (+ test vector) => padding => modes => kdf => mac => fileformat => cli => analysis => docs`.
+`prng + sbox, rounds => key_schedule => cipher (+ test vector) => padding => modes => kdf + mac => fileformat => cli => integration + e2e test => analysis => docs => verifikasi final`. Urutan lengkap dan nomor issue ada di `docs/trd.md` Bagian 13.
 
 Fokus pada clean code: type hints, docstring singkat, nama fungsi sesuai istilah di blueprint ini (`diagonal_transpose`, `row_rotator`, `column_cascade`, `dynamic_sub`). Source code akan di-review asisten dosen. Semua bonus spec dikerjakan dan wajib: API docs (pdoc => GitHub Pages) yang mendokumentasikan fungsi publik beserta tipe datanya, executable Linux + Windows, dan video demo (manual). Lihat `docs/trd.md` Bagian 1.1 dan 13.
