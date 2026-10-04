@@ -1,4 +1,4 @@
-name: test
+name: ci
 
 on:
   push:
@@ -9,7 +9,16 @@ permissions:
   contents: read
 
 jobs:
-  pytest:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.2.0
+      - run: uv sync --locked
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+
+  test:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -22,4 +31,5 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - run: uv sync --all-groups --locked
-      - run: uv run pytest -m "not slow"
+      - name: Unit and light integration tests
+        run: uv run pytest -m "not slow"
