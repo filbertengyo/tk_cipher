@@ -17,13 +17,17 @@ uv sync --all-groups
 
 Commit pakai conventional commits, contohnya `feat(cipher): add key schedule`.
 
-## Test
+## Lint dan test
 
-CI jalanin test di Linux dan Windows setiap ada push dan PR. Jalankan dulu di lokal biar nggak merah:
+CI jalanin lint (ruff) dan test di Linux dan Windows setiap ada push dan PR. Jalankan dulu di lokal biar nggak merah:
 
 ```bash
+uv run ruff check .
+uv run ruff format --check .
 uv run pytest
 ```
+
+`uv run ruff format .` buat merapikan format otomatis.
 
 Test yang lama ditandai `slow` dan nggak dijalankan di CI. Buat jalan cepat: `uv run pytest -m "not slow"`. Kalau perubahan kamu nyentuh cipher atau format file, jalankan yang lengkap di lokal.
 
