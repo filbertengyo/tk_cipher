@@ -66,7 +66,9 @@ flowchart TD
     mac --> cipher
     modes --> cipher
     cipher --> ks["Key schedule"]
+    cipher --> rounds["Operasi ronde"]
     cipher --> sbox["S-box dinamis"]
+    ks --> rounds
     ks --> sbox
     sbox --> prng["PRNG"]
 ```
