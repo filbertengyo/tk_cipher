@@ -1,5 +1,3 @@
-"""TK-Cipher: a custom 128-bit SPN block cipher with a file encryption CLI."""
+"""TK-Cipher, a custom 128-bit block cipher."""
 
 __version__ = "0.1.0"
-
-__all__ = ["__version__"]
