@@ -1,4 +1,8 @@
-"""Format file terenkripsi TK-Cipher."""
+"""Format file terenkripsi TK-Cipher yang self-describing, dengan verify-then-decrypt
+
+Layout file: `header 32 byte | ciphertext N byte | tag CMAC 16 byte`, N kelipatan 16.
+Dekripsi cukup pakai file dan master key karena mode dan IV ikut tersimpan
+"""
 
 import os
 import struct
@@ -23,16 +27,19 @@ _AUTHENTICATION_ERROR = "MAC verification failed: wrong key or file has been mod
 
 @dataclass(frozen=True)
 class Header:
-    """Header file: mode, IV, dan panjang plaintext asli.
+    """Header 32 byte di awal file terenkripsi: mode, IV, dan panjang plaintext asli
+
+    Layout `>4sBBH16sQ`: magic `TKC1`, version, mode, reserved 0, IV 16 byte,
+    panjang plaintext uint64 big-endian
 
     Args:
-        mode: Mode enkripsi yang dipakai.
-        iv: IV 16 byte; ECB memakai 16 byte nol.
-        original_length: Panjang plaintext sebelum padding.
-        version: Versi format file, saat ini 1.
+        mode (Mode): mode enkripsi yang dipakai
+        iv (bytes): IV 16 byte, ECB pakai 16 byte nol
+        original_length (int): panjang plaintext sebelum padding
+        version (int): versi format file, sekarang 1
 
     Raises:
-        ValueError: Metadata tidak sesuai format file.
+        ValueError: metadata tidak sesuai format waktu `pack`
 
     Example:
         >>> len(Header(Mode.ECB, bytes(16), 0).pack())
@@ -45,13 +52,18 @@ class Header:
     version: int = _VERSION
 
     def pack(self) -> bytes:
-        """Ubah header menjadi 32 byte sesuai format file.
+        """Ubah header jadi 32 byte sesuai layout file
 
         Returns:
-            Header dalam bentuk bytes.
+            bytes: header 32 byte
 
         Raises:
-            ValueError: Versi, mode, IV, atau panjang tidak valid.
+            ValueError: versi, mode, panjang IV, atau `original_length` tidak valid,
+                atau ECB dengan IV bukan nol
+
+        Example:
+            >>> Header(Mode.CBC, bytes(16), 5).pack()[:6]
+            b'TKC1\\x01\\x01'
         """
         try:
             mode = Mode(self.mode)
@@ -77,16 +89,21 @@ class Header:
 
     @classmethod
     def unpack(cls, data: bytes) -> "Header":
-        """Baca header 32 byte dan validasi isinya.
+        """Baca header 32 byte dan validasi magic, versi, mode, dan reserved
 
         Args:
-            data: Header hasil serialisasi.
+            data (bytes): header 32 byte dari awal file
 
         Returns:
-            Objek Header dari data.
+            Header: objek header hasil parsing
 
         Raises:
-            InvalidFormatError: Header rusak atau format tidak didukung.
+            InvalidFormatError: panjang bukan 32 byte atau field tidak valid
+
+        Example:
+            >>> h = Header(Mode.CTR, bytes(range(16)), 7)
+            >>> Header.unpack(h.pack()) == h
+            True
         """
         if len(data) != _HEADER_SIZE:
             raise InvalidFormatError("Header must be exactly 32 bytes")
@@ -105,23 +122,31 @@ class Header:
 def encrypt_bytes(
     plaintext: bytes, master_key: bytes, mode: Mode, iv: bytes | None = None
 ) -> bytes:
-    """Enkripsi plaintext dan tambahkan tag CMAC.
+    """Enkripsi plaintext jadi blob `header | ciphertext | tag` (Encrypt-then-MAC)
+
+    Key enkripsi dan key MAC diturunin dari `master_key` lewat `derive_keys`,
+    plaintext di-pad PKCS#7, dienkripsi dengan `mode`, lalu header dan ciphertext
+    diautentikasi pakai CMAC
 
     Args:
-        plaintext: Data yang akan dienkripsi.
-        master_key: Kunci utama TK-Cipher.
-        mode: Mode blok yang digunakan.
-        iv: IV 16 byte; dibuat acak jika tidak diberikan.
+        plaintext (bytes): data yang mau dienkripsi, boleh kosong
+        master_key (bytes): master key 16, 24, atau 32 byte
+        mode (Mode): mode operasi
+        iv (bytes | None): IV 16 byte. `None` artinya IV acak dari `os.urandom`.
+            Harus `None` untuk ECB
 
     Returns:
-        Header, ciphertext, dan tag CMAC 16 byte.
+        bytes: header 32 byte, ciphertext, dan tag CMAC 16 byte
 
     Raises:
-        ValueError: Mode atau IV tidak valid.
-        InvalidKeyError: Panjang master key tidak didukung.
+        ValueError: mode tidak dikenal, IV dikasih buat ECB, atau panjang IV bukan 16
+        InvalidKeyError: panjang master key tidak didukung
 
     Example:
-        >>> decrypt_bytes(encrypt_bytes(b"hello", bytes(16), Mode.CTR, bytes(16)), bytes(16))
+        >>> blob = encrypt_bytes(b"hello", bytes(16), Mode.CTR, bytes(16))
+        >>> len(blob)
+        64
+        >>> decrypt_bytes(blob, bytes(16))
         b'hello'
     """
     try:
@@ -148,19 +173,36 @@ def encrypt_bytes(
 
 
 def decrypt_bytes(blob: bytes, master_key: bytes) -> bytes:
-    """Verifikasi tag sebelum mendekripsi ciphertext.
+    """Verifikasi tag dulu, baru dekripsi blob hasil `encrypt_bytes`
+
+    Urutannya: cek struktur, turunin key, cek tag constant time, dekripsi,
+    `unpad`, lalu cek panjang plaintext dengan header. Kalau tag salah tidak ada
+    plaintext yang dihasilkan sama sekali
 
     Args:
-        blob: Header, ciphertext, dan tag dari file.
-        master_key: Master key TK-Cipher.
+        blob (bytes): isi file terenkripsi lengkap
+        master_key (bytes): master key 16, 24, atau 32 byte
 
     Returns:
-        Plaintext asli.
+        bytes: plaintext asli
 
     Raises:
-        InvalidFormatError: Struktur, padding, atau panjang plaintext tidak valid.
-        AuthenticationError: Tag tidak cocok dengan key atau isi file.
-        InvalidKeyError: Panjang master key tidak didukung.
+        InvalidFormatError: blob terlalu pendek, panjang tidak pas, header rusak,
+            padding rusak, atau panjang plaintext beda dengan header
+        AuthenticationError: tag tidak cocok, artinya key salah atau file diubah
+        InvalidKeyError: panjang master key tidak didukung
+
+    Example:
+        >>> blob = encrypt_bytes(b"secret", bytes(16), Mode.CBC)
+        >>> decrypt_bytes(blob, bytes(16))
+        b'secret'
+        >>> decrypt_bytes(blob, bytes([1]) * 16)
+        Traceback (most recent call last):
+        ...
+        tk_cipher.errors.AuthenticationError: MAC verification failed: wrong key or file has been modified
+
+    Note:
+        Pesan error sama untuk key salah dan file rusak, biar tidak bocorin info
     """
     if len(blob) < _HEADER_SIZE + BLOCK_SIZE + _TAG_SIZE:
         raise InvalidFormatError("Encrypted file is too short")
@@ -207,22 +249,32 @@ def _atomic_write(dst: Path, data: bytes) -> None:
 def encrypt_file(
     src: Path, dst: Path, master_key: bytes, mode: Mode, iv: bytes | None = None
 ) -> Header:
-    """Enkripsi file dan simpan hasilnya secara atomik.
+    """Enkripsi file dan tulis hasilnya secara atomik
+
+    Baca `src` sebagai biner, panggil `encrypt_bytes`, tulis ke file sementara di
+    folder `dst`, lalu `os.replace` ke `dst`
 
     Args:
-        src: Path file plaintext.
-        dst: Path tujuan ciphertext.
-        master_key: Master key TK-Cipher.
-        mode: Mode blok yang digunakan.
-        iv: IV 16 byte; dibuat acak jika tidak diberikan.
+        src (pathlib.Path): file plaintext
+        dst (pathlib.Path): file tujuan ciphertext
+        master_key (bytes): master key 16, 24, atau 32 byte
+        mode (Mode): mode operasi
+        iv (bytes | None): IV 16 byte, `None` buat IV acak, harus `None` untuk ECB
 
     Returns:
-        Header yang disimpan bersama ciphertext.
+        Header: header yang ditulis, termasuk IV yang dipakai
 
     Raises:
-        OSError: Gagal membaca atau menulis file.
-        ValueError: Mode atau IV tidak valid.
-        InvalidKeyError: Panjang master key tidak didukung.
+        OSError: gagal baca atau tulis file
+        ValueError: mode atau IV tidak valid
+        InvalidKeyError: panjang master key tidak didukung
+
+    Example:
+        >>> import tempfile, pathlib
+        >>> d = pathlib.Path(tempfile.mkdtemp())
+        >>> _ = (d / "a.txt").write_bytes(b"hi")
+        >>> encrypt_file(d / "a.txt", d / "a.enc", bytes(16), Mode.CBC).mode.name
+        'CBC'
     """
     blob = encrypt_bytes(src.read_bytes(), master_key, mode, iv)
     header = Header.unpack(blob[:_HEADER_SIZE])
@@ -231,23 +283,34 @@ def encrypt_file(
 
 
 def decrypt_file(src: Path, dst: Path, master_key: bytes) -> Header:
-    """Verifikasi dan dekripsi file, lalu simpan plaintext secara atomik.
+    """Verifikasi dan dekripsi file, lalu tulis plaintext secara atomik
 
-    File tujuan tidak diubah jika verifikasi atau dekripsi gagal.
+    Kalau verifikasi atau dekripsi gagal, `dst` tidak dibuat dan file yang sudah
+    ada tidak diubah
 
     Args:
-        src: Path file ciphertext.
-        dst: Path tujuan plaintext.
-        master_key: Master key TK-Cipher.
+        src (pathlib.Path): file ciphertext
+        dst (pathlib.Path): file tujuan plaintext
+
+        master_key (bytes): master key 16, 24, atau 32 byte
 
     Returns:
-        Header dari file ciphertext.
+        Header: header dari file ciphertext
 
     Raises:
-        OSError: Gagal membaca atau menulis file.
-        InvalidFormatError: Struktur file atau plaintext tidak valid.
-        AuthenticationError: Tag tidak cocok dengan key atau isi file.
-        InvalidKeyError: Panjang master key tidak didukung.
+        OSError: gagal baca atau tulis file
+        InvalidFormatError: struktur file atau plaintext tidak valid
+        AuthenticationError: tag tidak cocok dengan key atau isi file
+        InvalidKeyError: panjang master key tidak didukung
+
+    Example:
+        >>> import tempfile, pathlib
+        >>> d = pathlib.Path(tempfile.mkdtemp())
+        >>> _ = (d / "a.txt").write_bytes(b"hi")
+        >>> _ = encrypt_file(d / "a.txt", d / "a.enc", bytes(16), Mode.OFB)
+        >>> _ = decrypt_file(d / "a.enc", d / "b.txt", bytes(16))
+        >>> (d / "b.txt").read_bytes()
+        b'hi'
     """
     blob = src.read_bytes()
     plaintext = decrypt_bytes(blob, master_key)

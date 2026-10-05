@@ -1,9 +1,18 @@
+"""Lima mode operasi TK-Cipher: ECB, CBC, CFB, OFB, CTR, semua full block 128-bit"""
+
 from enum import IntEnum
 
 from tk_cipher.cipher import BLOCK_SIZE, TKCipher
 
 
 class Mode(IntEnum):
+    """Mode operasi, nilainya sama dengan byte mode di header file
+
+    Example:
+        >>> Mode(1).name
+        'CBC'
+    """
+
     ECB = 0
     CBC = 1
     CFB = 2
@@ -12,7 +21,27 @@ class Mode(IntEnum):
 
 
 def encrypt_ecb(cipher: TKCipher, data: bytes) -> bytes:
-    """Encrypts bytes using ECB block mode"""
+    """Enkripsi data pakai mode ECB: tiap blok dienkripsi sendiri sendiri, blok sama menghasilkan ciphertext sama
+
+    Args:
+        cipher (TKCipher): cipher yang sudah dibuat dengan key
+        data (bytes): plaintext, panjang kelipatan 16 byte
+
+    Returns:
+        bytes: ciphertext dengan panjang sama
+
+    Raises:
+        ValueError: blok tidak 16 byte. Fungsi ini tidak cek panjang data dan IV,
+            pakai `encrypt` buat validasi lengkap
+
+    Example:
+        >>> c = TKCipher(bytes(16))
+        >>> decrypt_ecb(c, encrypt_ecb(c, bytes(32))) == bytes(32)
+        True
+
+    Note:
+        Tidak butuh IV. Pola plaintext bocor, jangan dipakai buat data berpola
+    """
 
     ciphertext = b""
 
@@ -24,7 +53,27 @@ def encrypt_ecb(cipher: TKCipher, data: bytes) -> bytes:
 
 
 def decrypt_ecb(cipher: TKCipher, data: bytes) -> bytes:
-    """Decrypts bytes using ECB block mode"""
+    """Dekripsi data pakai mode ECB: tiap blok dienkripsi sendiri sendiri, blok sama menghasilkan ciphertext sama
+
+    Args:
+        cipher (TKCipher): cipher yang sudah dibuat dengan key
+        data (bytes): ciphertext, panjang kelipatan 16 byte
+
+    Returns:
+        bytes: plaintext dengan panjang sama
+
+    Raises:
+        ValueError: blok tidak 16 byte. Fungsi ini tidak cek panjang data dan IV,
+            pakai `decrypt` buat validasi lengkap
+
+    Example:
+        >>> c = TKCipher(bytes(16))
+        >>> encrypt_ecb(c, decrypt_ecb(c, bytes(32))) == bytes(32)
+        True
+
+    Note:
+        Tidak butuh IV. Pola plaintext bocor, jangan dipakai buat data berpola
+    """
 
     plaintext = b""
 
@@ -36,7 +85,28 @@ def decrypt_ecb(cipher: TKCipher, data: bytes) -> bytes:
 
 
 def encrypt_cbc(cipher: TKCipher, data: bytes, iv: bytes) -> bytes:
-    """Encrypts bytes using CBC block mode"""
+    """Enkripsi data pakai mode CBC: `C_i = E(P_i ^ C_{i-1})` dengan `C_{-1} = iv`
+
+    Args:
+        cipher (TKCipher): cipher yang sudah dibuat dengan key
+        data (bytes): plaintext, panjang kelipatan 16 byte
+        iv (bytes): IV 16 byte
+
+    Returns:
+        bytes: ciphertext dengan panjang sama
+
+    Raises:
+        ValueError: blok tidak 16 byte. Fungsi ini tidak cek panjang data dan IV,
+            pakai `encrypt` buat validasi lengkap
+
+    Example:
+        >>> c = TKCipher(bytes(16))
+        >>> decrypt_cbc(c, encrypt_cbc(c, bytes(32), bytes(16)), bytes(16)) == bytes(32)
+        True
+
+    Note:
+        IV harus acak dan tidak dipakai ulang
+    """
 
     ciphertext = b""
     previous_ciphertext = iv
@@ -51,7 +121,28 @@ def encrypt_cbc(cipher: TKCipher, data: bytes, iv: bytes) -> bytes:
 
 
 def decrypt_cbc(cipher: TKCipher, data: bytes, iv: bytes) -> bytes:
-    """Decrypts bytes using CBC block mode"""
+    """Dekripsi data pakai mode CBC: `C_i = E(P_i ^ C_{i-1})` dengan `C_{-1} = iv`
+
+    Args:
+        cipher (TKCipher): cipher yang sudah dibuat dengan key
+        data (bytes): ciphertext, panjang kelipatan 16 byte
+        iv (bytes): IV 16 byte
+
+    Returns:
+        bytes: plaintext dengan panjang sama
+
+    Raises:
+        ValueError: blok tidak 16 byte. Fungsi ini tidak cek panjang data dan IV,
+            pakai `decrypt` buat validasi lengkap
+
+    Example:
+        >>> c = TKCipher(bytes(16))
+        >>> encrypt_cbc(c, decrypt_cbc(c, bytes(32), bytes(16)), bytes(16)) == bytes(32)
+        True
+
+    Note:
+        IV harus acak dan tidak dipakai ulang
+    """
 
     plaintext = b""
     previous_ciphertext = iv
@@ -68,7 +159,28 @@ def decrypt_cbc(cipher: TKCipher, data: bytes, iv: bytes) -> bytes:
 
 
 def encrypt_cfb(cipher: TKCipher, data: bytes, iv: bytes) -> bytes:
-    """Encrypts bytes using CFB block mode"""
+    """Enkripsi data pakai mode CFB: `C_i = P_i ^ E(C_{i-1})` dengan `C_{-1} = iv`
+
+    Args:
+        cipher (TKCipher): cipher yang sudah dibuat dengan key
+        data (bytes): plaintext, panjang kelipatan 16 byte
+        iv (bytes): IV 16 byte
+
+    Returns:
+        bytes: ciphertext dengan panjang sama
+
+    Raises:
+        ValueError: blok tidak 16 byte. Fungsi ini tidak cek panjang data dan IV,
+            pakai `encrypt` buat validasi lengkap
+
+    Example:
+        >>> c = TKCipher(bytes(16))
+        >>> decrypt_cfb(c, encrypt_cfb(c, bytes(32), bytes(16)), bytes(16)) == bytes(32)
+        True
+
+    Note:
+        Cuma butuh `encrypt_block`, dekripsi juga pakai enkripsi blok
+    """
 
     ciphertext = b""
     previous_ciphertext = iv
@@ -83,7 +195,28 @@ def encrypt_cfb(cipher: TKCipher, data: bytes, iv: bytes) -> bytes:
 
 
 def decrypt_cfb(cipher: TKCipher, data: bytes, iv: bytes) -> bytes:
-    """Decrypts bytes using CFB block mode"""
+    """Dekripsi data pakai mode CFB: `C_i = P_i ^ E(C_{i-1})` dengan `C_{-1} = iv`
+
+    Args:
+        cipher (TKCipher): cipher yang sudah dibuat dengan key
+        data (bytes): ciphertext, panjang kelipatan 16 byte
+        iv (bytes): IV 16 byte
+
+    Returns:
+        bytes: plaintext dengan panjang sama
+
+    Raises:
+        ValueError: blok tidak 16 byte. Fungsi ini tidak cek panjang data dan IV,
+            pakai `decrypt` buat validasi lengkap
+
+    Example:
+        >>> c = TKCipher(bytes(16))
+        >>> encrypt_cfb(c, decrypt_cfb(c, bytes(32), bytes(16)), bytes(16)) == bytes(32)
+        True
+
+    Note:
+        Cuma butuh `encrypt_block`, dekripsi juga pakai enkripsi blok
+    """
 
     plaintext = b""
     previous_ciphertext = iv
@@ -98,7 +231,28 @@ def decrypt_cfb(cipher: TKCipher, data: bytes, iv: bytes) -> bytes:
 
 
 def encrypt_ofb(cipher: TKCipher, data: bytes, iv: bytes) -> bytes:
-    """Encrypts bytes using OFB block mode"""
+    """Enkripsi data pakai mode OFB: keystream `O_i = E(O_{i-1})` dengan `O_{-1} = iv`, lalu `C_i = P_i ^ O_i`
+
+    Args:
+        cipher (TKCipher): cipher yang sudah dibuat dengan key
+        data (bytes): plaintext, panjang kelipatan 16 byte
+        iv (bytes): IV 16 byte
+
+    Returns:
+        bytes: ciphertext dengan panjang sama
+
+    Raises:
+        ValueError: blok tidak 16 byte. Fungsi ini tidak cek panjang data dan IV,
+            pakai `encrypt` buat validasi lengkap
+
+    Example:
+        >>> c = TKCipher(bytes(16))
+        >>> decrypt_ofb(c, encrypt_ofb(c, bytes(32), bytes(16)), bytes(16)) == bytes(32)
+        True
+
+    Note:
+        Keystream tidak bergantung plaintext, IV yang sama dengan key sama bikin keystream bocor
+    """
 
     ciphertext = b""
     previous_vector = iv
@@ -113,7 +267,28 @@ def encrypt_ofb(cipher: TKCipher, data: bytes, iv: bytes) -> bytes:
 
 
 def decrypt_ofb(cipher: TKCipher, data: bytes, iv: bytes) -> bytes:
-    """Decrypts bytes using OFB block mode"""
+    """Dekripsi data pakai mode OFB: keystream `O_i = E(O_{i-1})` dengan `O_{-1} = iv`, lalu `C_i = P_i ^ O_i`
+
+    Args:
+        cipher (TKCipher): cipher yang sudah dibuat dengan key
+        data (bytes): ciphertext, panjang kelipatan 16 byte
+        iv (bytes): IV 16 byte
+
+    Returns:
+        bytes: plaintext dengan panjang sama
+
+    Raises:
+        ValueError: blok tidak 16 byte. Fungsi ini tidak cek panjang data dan IV,
+            pakai `decrypt` buat validasi lengkap
+
+    Example:
+        >>> c = TKCipher(bytes(16))
+        >>> encrypt_ofb(c, decrypt_ofb(c, bytes(32), bytes(16)), bytes(16)) == bytes(32)
+        True
+
+    Note:
+        Keystream tidak bergantung plaintext, IV yang sama dengan key sama bikin keystream bocor
+    """
 
     plaintext = b""
     previous_vector = iv
@@ -128,7 +303,28 @@ def decrypt_ofb(cipher: TKCipher, data: bytes, iv: bytes) -> bytes:
 
 
 def encrypt_ctr(cipher: TKCipher, data: bytes, iv: bytes) -> bytes:
-    """Encrypts bytes using CTR block mode"""
+    """Enkripsi data pakai mode CTR: `C_i = P_i ^ E(iv + i mod 2^128)`, counter big-endian
+
+    Args:
+        cipher (TKCipher): cipher yang sudah dibuat dengan key
+        data (bytes): plaintext, panjang kelipatan 16 byte
+        iv (bytes): IV 16 byte (counter awal)
+
+    Returns:
+        bytes: ciphertext dengan panjang sama
+
+    Raises:
+        ValueError: blok tidak 16 byte. Fungsi ini tidak cek panjang data dan IV,
+            pakai `encrypt` buat validasi lengkap
+
+    Example:
+        >>> c = TKCipher(bytes(16))
+        >>> decrypt_ctr(c, encrypt_ctr(c, bytes(32), bytes(16)), bytes(16)) == bytes(32)
+        True
+
+    Note:
+        `iv` adalah counter awal, counter `ff..ff` wrap ke `00..00`
+    """
 
     ciphertext = b""
     counter = int.from_bytes(iv, "big")
@@ -143,7 +339,28 @@ def encrypt_ctr(cipher: TKCipher, data: bytes, iv: bytes) -> bytes:
 
 
 def decrypt_ctr(cipher: TKCipher, data: bytes, iv: bytes) -> bytes:
-    """Decrypts bytes using CTR block mode"""
+    """Dekripsi data pakai mode CTR: `C_i = P_i ^ E(iv + i mod 2^128)`, counter big-endian
+
+    Args:
+        cipher (TKCipher): cipher yang sudah dibuat dengan key
+        data (bytes): ciphertext, panjang kelipatan 16 byte
+        iv (bytes): IV 16 byte (counter awal)
+
+    Returns:
+        bytes: plaintext dengan panjang sama
+
+    Raises:
+        ValueError: blok tidak 16 byte. Fungsi ini tidak cek panjang data dan IV,
+            pakai `decrypt` buat validasi lengkap
+
+    Example:
+        >>> c = TKCipher(bytes(16))
+        >>> encrypt_ctr(c, decrypt_ctr(c, bytes(32), bytes(16)), bytes(16)) == bytes(32)
+        True
+
+    Note:
+        `iv` adalah counter awal, counter `ff..ff` wrap ke `00..00`
+    """
 
     plaintext = b""
     counter = int.from_bytes(iv, "big")
@@ -158,7 +375,28 @@ def decrypt_ctr(cipher: TKCipher, data: bytes, iv: bytes) -> bytes:
 
 
 def encrypt(cipher: TKCipher, mode: Mode, data: bytes, iv: bytes | None) -> bytes:
-    """Encrypts bytes using the specified block mode"""
+    """Enkripsi data pakai mode yang dipilih, dengan validasi panjang data dan IV
+
+    Args:
+        cipher (TKCipher): cipher yang sudah dibuat dengan key
+        mode (Mode): salah satu `Mode.ECB`, `CBC`, `CFB`, `OFB`, `CTR`
+        data (bytes): plaintext, panjang kelipatan 16 byte dan tidak kosong. Pakai
+            `tk_cipher.padding.pad` dulu kalau panjangnya belum pas
+        iv (bytes | None): IV atau counter awal 16 byte, harus `None` untuk ECB
+
+    Returns:
+        bytes: ciphertext dengan panjang sama
+
+    Raises:
+        ValueError: data kosong atau bukan kelipatan 16, IV dikasih buat ECB, IV
+            tidak ada buat mode lain, atau panjang IV bukan 16 byte
+
+    Example:
+        >>> c = TKCipher(bytes(16))
+        >>> ct = encrypt(c, Mode.CTR, bytes(32), bytes(16))
+        >>> decrypt(c, Mode.CTR, ct, bytes(16)) == bytes(32)
+        True
+    """
 
     if len(data) % BLOCK_SIZE != 0 or len(data) == 0:
         raise ValueError(f"Data not aligned to cipher block size ({BLOCK_SIZE} bytes)")
@@ -188,7 +426,28 @@ def encrypt(cipher: TKCipher, mode: Mode, data: bytes, iv: bytes | None) -> byte
 
 
 def decrypt(cipher: TKCipher, mode: Mode, data: bytes, iv: bytes | None) -> bytes:
-    """Decrypts bytes using the specified block mode"""
+    """Dekripsi data pakai mode yang dipilih, dengan validasi panjang data dan IV
+
+    Args:
+        cipher (TKCipher): cipher yang sudah dibuat dengan key
+        mode (Mode): salah satu `Mode.ECB`, `CBC`, `CFB`, `OFB`, `CTR`
+        data (bytes): ciphertext, panjang kelipatan 16 byte dan tidak kosong. Pakai
+            `tk_cipher.padding.pad` dulu kalau panjangnya belum pas
+        iv (bytes | None): IV atau counter awal 16 byte, harus `None` untuk ECB
+
+    Returns:
+        bytes: plaintext dengan panjang sama
+
+    Raises:
+        ValueError: data kosong atau bukan kelipatan 16, IV dikasih buat ECB, IV
+            tidak ada buat mode lain, atau panjang IV bukan 16 byte
+
+    Example:
+        >>> c = TKCipher(bytes(16))
+        >>> ct = encrypt(c, Mode.CTR, bytes(32), bytes(16))
+        >>> decrypt(c, Mode.CTR, ct, bytes(16)) == bytes(32)
+        True
+    """
 
     if len(data) % BLOCK_SIZE != 0 or len(data) == 0:
         raise ValueError(f"Data not aligned to cipher block size ({BLOCK_SIZE} bytes)")

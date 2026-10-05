@@ -10,7 +10,9 @@ from tk_cipher.rounds import (
 from tk_cipher.sbox import KEY_SIZES, SBox
 
 G = 0x9E3779B9
+"""Konstanta golden ratio buat round constant"""
 DEFAULT_ROUNDS = 16
+"""Jumlah ronde default, jadi 17 round key"""
 
 
 def _rotl32(x: int, n: int) -> int:
@@ -24,6 +26,7 @@ def _round_constant(i: int) -> int:
 ROUND_CONSTANTS: tuple[int, ...] = tuple(
     _round_constant(i) for i in range(DEFAULT_ROUNDS + 1)
 )
+"""`RC_i = rotl32(G, 5i mod 32) ^ (i * 0x01010101)` buat i = 0 sampai 16"""
 
 
 def _lanes(key: bytes, sbox: SBox) -> tuple[bytes, bytes]:
@@ -38,7 +41,30 @@ def _lanes(key: bytes, sbox: SBox) -> tuple[bytes, bytes]:
 
 
 def expand_key(key: bytes, sbox: SBox, rounds: int = DEFAULT_ROUNDS) -> list[bytes]:
-    """Turunkan rounds + 1 round key (16 byte) dari master key lewat S-box dinamis"""
+    """Turunkan `rounds + 1` round key 16 byte dari master key lewat S-box dinamis
+
+    Gaya sponge: `t` mulai dari nol, tiap ronde di-XOR lane key (`k0` di ronde
+    genap, `k1` di ronde ganjil), disubstitusi S-box, di-XOR `RC_i`, lalu dicampur
+    DiagonalTranspose, RowRotator, dan ColumnCascade
+
+    Args:
+        key (bytes): master key 16, 24, atau 32 byte
+        sbox (SBox): S-box dari `generate_sbox(key)`
+        rounds (int): jumlah ronde, default 16
+
+    Returns:
+        list[bytes]: `rounds + 1` round key, masing masing 16 byte
+
+    Raises:
+        InvalidKeyError: panjang key bukan 16, 24, atau 32 byte
+        ValueError: `rounds` kurang dari 1
+
+    Example:
+        >>> from tk_cipher.sbox import generate_sbox
+        >>> rks = expand_key(bytes(16), generate_sbox(bytes(16)))
+        >>> len(rks), len(rks[0])
+        (17, 16)
+    """
     if len(key) not in KEY_SIZES:
         raise InvalidKeyError("key must be 16, 24, or 32 bytes")
     if rounds < 1:
