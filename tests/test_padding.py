@@ -1,7 +1,7 @@
 import pytest
 
-from tk_cipher.padding import pad, unpad
 from tk_cipher.errors import PaddingError
+from tk_cipher.padding import pad, unpad
 
 
 @pytest.mark.parametrize(
