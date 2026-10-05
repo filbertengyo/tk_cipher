@@ -1,4 +1,13 @@
-"""CLI tk-cipher buat enc, dec, dan keygen"""
+"""CLI `tk-cipher` buat enkripsi, dekripsi, dan bikin key
+
+Pemakaian:
+
+    tk-cipher enc -i <in> -o <out> (-k <hex> | --key-file <path>) -m {ecb,cbc,cfb,ofb,ctr} [--iv <32 hex>]
+    tk-cipher dec -i <in> -o <out> (-k <hex> | --key-file <path>)
+    tk-cipher keygen [--bits {128,192,256}]
+
+Exit code: 0 sukses, 1 argumen atau key salah, 2 file rusak, 3 MAC gagal
+"""
 
 import argparse
 import os
@@ -15,13 +24,20 @@ from tk_cipher.fileformat import decrypt_file, encrypt_file
 from tk_cipher.modes import Mode
 
 KEY_HEX_LENGTHS = (32, 48, 64)
+"""Panjang key hex yang valid (128, 192, 256-bit)"""
 IV_HEX_LENGTH = 32
+"""Panjang IV hex (16 byte)"""
 MODES = tuple(m.name.lower() for m in Mode)
+"""Nama mode buat opsi `-m`"""
 
 EXIT_OK = 0
+"""Exit code sukses"""
 EXIT_USAGE = 1
+"""Exit code argumen salah, key invalid, atau file input tidak ada"""
 EXIT_FORMAT = 2
+"""Exit code `InvalidFormatError` atau `PaddingError`"""
 EXIT_AUTH = 3
+"""Exit code `AuthenticationError`"""
 
 
 class _Parser(argparse.ArgumentParser):
@@ -31,7 +47,23 @@ class _Parser(argparse.ArgumentParser):
 
 
 def parse_hex(text: str, lengths: tuple[int, ...], what: str) -> bytes:
-    """Ubah hex (spasi diabaikan, huruf besar kecil boleh) jadi bytes, panjang salah => InvalidKeyError"""
+    """Ubah string hex jadi bytes, spasi diabaikan dan huruf besar kecil boleh
+
+    Args:
+        text (str): string hex dari argumen atau isi key file
+        lengths (tuple[int, ...]): panjang hex yang diterima
+        what (str): nama nilai buat pesan error, misalnya `"key"` atau `"iv"`
+
+    Returns:
+        bytes: hasil decode hex
+
+    Raises:
+        InvalidKeyError: panjang tidak ada di `lengths` atau bukan hex valid
+
+    Example:
+        >>> parse_hex("00 11 AA ff", (8,), "key")
+        b'\\x00\\x11\\xaa\\xff'
+    """
     cleaned = "".join(text.split())
     if len(cleaned) not in lengths:
         expected = ", ".join(str(n) for n in lengths)
@@ -103,7 +135,24 @@ def _run_dec(args: argparse.Namespace) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Jalankan CLI dengan argv, return exit code (0 sukses, 1 argumen, 2 format, 3 autentikasi)"""
+    """Jalankan CLI dengan argumen yang dikasih dan return exit code
+
+    Error dicetak satu baris ke stderr tanpa traceback. `enc` juga mencetak mode
+    dan IV yang dipakai ke stderr biar IV acak bisa dicatat
+
+    Args:
+        argv (list[str] | None): argumen tanpa nama program, `None` pakai `sys.argv[1:]`
+
+    Returns:
+        int: 0 sukses, 1 argumen atau key salah, 2 file rusak, 3 MAC gagal
+
+    Raises:
+        Tidak ada, semua error dipetakan ke exit code
+
+    Example:
+        >>> main(["dec", "-i", "missing.enc", "-o", "out.bin", "-k", "00" * 16])
+        1
+    """
     parser = _build_parser()
     try:
         args = parser.parse_args(argv)
