@@ -128,7 +128,7 @@ Master key: **16, 24, atau 32 byte** (128/192/256-bit), diberikan user sebagai h
    - **Tidak memakai** modul `random` Python.
 2. **Fisher-Yates shuffle** array `[0..255]` dengan `TKRand`.
 3. **Fix-up fixed point:** selama ada `x` dengan `S[x] == x` atau `S[x] == x ^ 0xFF`, swap `S[x]` dengan posisi acak lain.
-4. **Filter kualitas:** terima hanya kalau **differential uniformity <= 12** dan **nonlinearity >= 90** (threshold awal, ditinjau ulang dari statistik S-box di analisis). Kalau gagal, shuffle ulang (PRNG lanjut, tetap deterministik per key).
+4. **Filter kualitas:** terima hanya kalau **differential uniformity <= 12** dan **nonlinearity >= 90**. Kalau gagal, shuffle ulang (PRNG lanjut, tetap deterministik per key). Threshold ini sudah direview di A-07 (`tests/results/sbox_stats.md`, 300 key, seed `20261006`) dan **dipertahankan**: ia membuang ekor terlemah kandidat (7.8% DU > 12, 5.3% NL < 90) dengan rata-rata cuma 1.18 attempts per key. Memperketat ke DU <= 10 butuh ~2.6 attempts (2.3x lebih lama) untuk satu tingkat DU, sedangkan NL >= 92 hanya menurunkan bias linear maksimum dari 38/256 ke 36/256.
 5. `S_inv[S[x]] = x`.
 
 Dokumen desain mencatat statistik S-box (DU, NL, jumlah percobaan) untuk test vector key.
