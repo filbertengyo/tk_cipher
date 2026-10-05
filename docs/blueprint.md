@@ -16,12 +16,12 @@
 | --------------------------------------------------------- | ------------------------------------ | ------ |
 | Block >= 64-bit                                           | 128-bit (Bagian 2)                   | Tercakup |
 | Master key >= block size                                  | 128/192/256-bit (Bagian 3)           | Tercakup |
-| Iterated cipher, n rounds + justifikasi                   | 16 ronde (Bagian 2.3, Bagian 7)      | Hipotesis |
+| Iterated cipher, n rounds + justifikasi                   | 16 ronde, diukur A-03 (Bagian 2.3)   | Tercakup |
 | Round key unik per ronde dari master key                  | Key schedule (Bagian 3.2)            | Tercakup |
 | Substitusi (S-box, invertible untuk SPN)                  | DynamicSub (Bagian 2.2)              | Tercakup |
 | Transposisi                                               | DiagonalTranspose                    | Tercakup |
 | Operasi tambahan (min 1)                                  | RowRotator + ColumnCascade           | Tercakup |
-| Confusion + diffusion (1 bit => seluruh blok)             | Bagian 2, dibuktikan di Bagian 7     | Hipotesis |
+| Confusion + diffusion (1 bit => seluruh blok)             | Bagian 2, full diffusion ronde 4     | Tercakup |
 | S-box bukan S-box AES, cara generate didokumentasi        | Bagian 3.1                           | Tercakup |
 | Tidak copy AES/DES/dll                                    | Bagian 1                             | Tercakup |
 | 5 mode (ECB, CBC, CFB, OFB, CTR) from scratch             | Bagian 4                             | Tercakup |
@@ -100,7 +100,17 @@ Dec(C):  s = C ^ RK_16
          P = s
 ```
 
-**Hipotesis 16 ronde:** 16 ronde diperkirakan beberapa kali lipat dari jumlah ronde yang dibutuhkan untuk full diffusion (setiap bit input memengaruhi setiap bit output), sehingga ada margin keamanan. Ini nilai awal. Justifikasi resminya baru ditulis setelah jumlah ronde full diffusion diukur (Bagian 7), dan jumlah ronde bisa direvisi kalau hasilnya tidak mendukung. Whitening `RK_16` mencegah ronde terakhir dikupas tanpa key.
+**Justifikasi 16 ronde (diukur, A-03):** `analysis/round_diffusion.py` mengukur `TKCipher(key, rounds=r)` untuk r = 1..16, dengan 8192 sampel flip 1 bit per ronde (64 sampel per bit input, seed `20261005`):
+
+| Ronde | Avalanche mean | Dependency bit (dari 16384 pasangan) |
+| ----: | -------------: | -----------------------------------: |
+| 1     | 11.44%         | 4919 (30.02%)                        |
+| 2     | 38.12%         | 13685 (83.53%)                       |
+| 3     | 47.04%         | 16200 (98.88%)                       |
+| 4     | 49.83%         | 16384 (100%)                         |
+| 5..16 | 49.95..50.03%  | 16384 (100%)                         |
+
+Full diffusion (setiap bit input memengaruhi setiap bit output, avalanche dalam 50% ~ 1 poin) tercapai di **ronde 4**, dan hasilnya sama dengan seed lain. 16 ronde berarti margin 12 ronde (4x ronde full diffusion), sebanding dengan AES-128 (full diffusion 2 ronde, 10 ronde, 5x). Karena itu `ROUNDS` tetap 16. Data lengkap: `tests/results/round_diffusion.{csv,png,md}`. Whitening `RK_16` mencegah ronde terakhir dikupas tanpa key.
 
 ---
 
