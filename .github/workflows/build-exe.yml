@@ -1,0 +1,49 @@
+name: build-exe
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - tk-cipher.spec
+      - .github/workflows/build-exe.yml
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            exe: dist/tk-cipher-linux
+          - os: windows-latest
+            exe: dist/tk-cipher-windows.exe
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.2.0
+      - run: uv sync --all-groups --locked
+      - run: uv run pyinstaller --noconfirm --clean tk-cipher.spec
+      - name: Smoke test without Python on PATH
+        shell: bash
+        run: |
+          export PATH="/usr/bin:/bin:/c/Windows/System32:/c/Windows"
+          echo "python on PATH: $(command -v python python3 || echo none)"
+          exe="$PWD/${{ matrix.exe }}"
+          mkdir smoke && cd smoke
+          cp ../README.md in.txt
+          "$exe" keygen > key.txt
+          for mode in cbc ctr; do
+            "$exe" enc -i in.txt -o "$mode.enc" --key-file key.txt -m "$mode"
+            "$exe" dec -i "$mode.enc" -o "$mode.out" --key-file key.txt
+            cmp in.txt "$mode.out"
+            echo "$mode round trip OK"
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.os }}-exe
+          path: ${{ matrix.exe }}
+          if-no-files-found: error
+
