@@ -6,6 +6,9 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = []
 
+[project.scripts]
+tk-cipher = "tk_cipher.cli:main"
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
