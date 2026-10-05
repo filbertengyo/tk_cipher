@@ -4,9 +4,9 @@
 **Arsitektur Dasar:** Substitution-Permutation Network (SPN), byte-level, state matriks 4x4
 **Bahasa:** Python 3 (stdlib only di jalur cipher)
 
-> **Status: rancangan awal, belum ada implementasi.** Rancangan ini memenuhi semua ketentuan spesifikasi tugas
-> di level rancangan. Klaim keamanan (confusion, diffusion, cukupnya 16 ronde) masih **hipotesis** dan baru
-> dibuktikan lewat analisis setelah implementasi berjalan (Bagian 7). Parameter bisa direvisi kalau hasil analisis menuntut.
+> **Status: sudah diimplementasi dan diuji.** Semua komponen di dokumen ini ada di `src/tk_cipher/` dengan konstanta yang sama.
+> Klaim keamanan sudah diukur (Bagian 7): full diffusion tercapai di ronde 4 sehingga 16 ronde memberi margin 4x,
+> avalanche plaintext dan key sekitar 50% di kelima mode, dan threshold S-box dipertahankan. Hasilnya di `tests/results/`.
 
 ---
 
@@ -14,32 +14,32 @@
 
 | Spec requirement                                          | Dipenuhi di                          | Status   |
 | --------------------------------------------------------- | ------------------------------------ | ------ |
-| Block >= 64-bit                                           | 128-bit (Bagian 2)                   | Tercakup |
-| Master key >= block size                                  | 128/192/256-bit (Bagian 3)           | Tercakup |
-| Iterated cipher, n rounds + justifikasi                   | 16 ronde, diukur A-03 (Bagian 2.3)   | Tercakup |
-| Round key unik per ronde dari master key                  | Key schedule (Bagian 3.2)            | Tercakup |
-| Substitusi (S-box, invertible untuk SPN)                  | DynamicSub (Bagian 2.2)              | Tercakup |
-| Transposisi                                               | DiagonalTranspose                    | Tercakup |
-| Operasi tambahan (min 1)                                  | RowRotator + ColumnCascade           | Tercakup |
-| Confusion + diffusion (1 bit => seluruh blok)             | Bagian 2, full diffusion ronde 4     | Tercakup |
-| S-box bukan S-box AES, cara generate didokumentasi        | Bagian 3.1                           | Tercakup |
-| Tidak copy AES/DES/dll                                    | Bagian 1                             | Tercakup |
-| 5 mode (ECB, CBC, CFB, OFB, CTR) from scratch             | Bagian 4                             | Tercakup |
-| IV untuk CBC/CFB/OFB, counter awal untuk CTR              | Bagian 4, Bagian 6                   | Tercakup |
-| IV random otomatis bila tidak diberikan                   | Bagian 4 (`os.urandom`)              | Tercakup |
-| Padding + justifikasi + mekanisme + edge case             | Bagian 5.1                           | Tercakup |
-| Integritas: Encrypt-then-MAC, MAC from scratch            | CMAC-TK (Bagian 5.3)                 | Tercakup |
-| Key enc & key MAC terpisah via KDF sendiri                | Bagian 5.2                           | Tercakup |
-| Verifikasi MAC **sebelum** dekripsi, error jelas          | Bagian 5.4                           | Tercakup |
-| Constant-time tag compare                                 | Bagian 5.3                           | Tercakup |
-| Format file self-describing                               | Bagian 5.4                           | Tercakup |
-| Program: input file + key + mode + IV => output           | CLI (Bagian 6)                       | Tercakup |
-| Jalan di Linux/Windows                                    | Pure Python, `pathlib`               | Tercakup |
-| Zero third-party crypto                                   | Bagian 8                             | Tercakup |
-| Analisis avalanche (PT + key), entropi, histogram, 5 mode | Bagian 7, Bagian 9                   | Tercakup |
-| Struktur repo + README 5 poin                             | Bagian 8, Bagian 8.1                 | Tercakup |
+| Block >= 64-bit                                           | 128-bit (Bagian 2)                   | Terimplementasi |
+| Master key >= block size                                  | 128/192/256-bit (Bagian 3)           | Terimplementasi |
+| Iterated cipher, n rounds + justifikasi                   | 16 ronde, diukur A-03 (Bagian 2.3)   | Terimplementasi |
+| Round key unik per ronde dari master key                  | Key schedule (Bagian 3.2)            | Terimplementasi |
+| Substitusi (S-box, invertible untuk SPN)                  | DynamicSub (Bagian 2.2)              | Terimplementasi |
+| Transposisi                                               | DiagonalTranspose                    | Terimplementasi |
+| Operasi tambahan (min 1)                                  | RowRotator + ColumnCascade           | Terimplementasi |
+| Confusion + diffusion (1 bit => seluruh blok)             | Bagian 2, full diffusion ronde 4     | Terimplementasi |
+| S-box bukan S-box AES, cara generate didokumentasi        | Bagian 3.1                           | Terimplementasi |
+| Tidak copy AES/DES/dll                                    | Bagian 1                             | Terimplementasi |
+| 5 mode (ECB, CBC, CFB, OFB, CTR) from scratch             | Bagian 4                             | Terimplementasi |
+| IV untuk CBC/CFB/OFB, counter awal untuk CTR              | Bagian 4, Bagian 6                   | Terimplementasi |
+| IV random otomatis bila tidak diberikan                   | Bagian 4 (`os.urandom`)              | Terimplementasi |
+| Padding + justifikasi + mekanisme + edge case             | Bagian 5.1                           | Terimplementasi |
+| Integritas: Encrypt-then-MAC, MAC from scratch            | CMAC-TK (Bagian 5.3)                 | Terimplementasi |
+| Key enc & key MAC terpisah via KDF sendiri                | Bagian 5.2                           | Terimplementasi |
+| Verifikasi MAC **sebelum** dekripsi, error jelas          | Bagian 5.4                           | Terimplementasi |
+| Constant-time tag compare                                 | Bagian 5.3                           | Terimplementasi |
+| Format file self-describing                               | Bagian 5.4                           | Terimplementasi |
+| Program: input file + key + mode + IV => output           | CLI (Bagian 6)                       | Terimplementasi |
+| Jalan di Linux/Windows                                    | Pure Python, `pathlib`               | Terimplementasi |
+| Zero third-party crypto                                   | Bagian 8                             | Terimplementasi |
+| Analisis avalanche (PT + key), entropi, histogram, 5 mode | Bagian 7, Bagian 9                   | Terimplementasi |
+| Struktur repo + README 5 poin                             | Bagian 8, Bagian 8.1                 | Terimplementasi |
 
-Tercakup = sudah ada di rancangan (belum diimplementasi dan diuji). Hipotesis = butuh bukti dari analisis setelah implementasi.
+Terimplementasi = ada di kode, dicek unit test, integration test, atau E2E, dan klaim analisisnya sudah diukur di `tests/results/`.
 
 ---
 
@@ -245,16 +245,17 @@ tk-cipher keygen [--bits 128|192|256]       # cetak key random (os.urandom) dala
 
 ---
 
-## 7. Rencana Validasi Desain
+## 7. Validasi Desain
 
-Diukur setelah implementasi, skrip di `analysis/`, hasil di `tests/results/`:
+Diukur pada implementasi akhir. Skrip di `analysis/`, hasil di `tests/results/`, semuanya bisa dibuat ulang dengan `uv run python analysis/run_all.py`:
 
-- Avalanche plaintext dan dependency bit (input ke output) per jumlah ronde, 1 sampai 16 ronde (`analysis/round_diffusion.py`). Hasilnya menentukan ronde full diffusion untuk justifikasi 16 ronde.
-- Avalanche plaintext dan key untuk cipher penuh.
-- Penyebaran perubahan 1 bit key ke round key.
-- Statistik S-box (DU, NL, jumlah percobaan) untuk banyak key.
-- Round-trip enc=>dec untuk key 128/192/256-bit (unit test).
-- Throughput enc/dec (benchmark).
+- Avalanche plaintext dan dependency bit per jumlah ronde 1 sampai 16 (`round_diffusion.py`): full diffusion di ronde 4, jadi 16 ronde memberi margin 4x.
+- Avalanche plaintext dan key untuk cipher penuh di 5 mode (`avalanche.py`): sekitar 50%, sesuai ekspektasi tiap mode.
+- Penyebaran perubahan 1 bit key: diukur di level ciphertext lewat avalanche key (A-02), bukan per round key.
+- Statistik S-box untuk 300 key (`sbox_stats.py`): threshold DU <= 12 dan NL >= 90 dipertahankan.
+- Entropi dan chi-square (`entropy.py`), histogram dan visual ECB vs CBC (`histogram.py`).
+- Round-trip enc => dec untuk key 128, 192, 256-bit: unit test, integration test, dan E2E.
+- Throughput enc dan dec plus waktu key setup (`benchmark.py`).
 
 ---
 
@@ -284,7 +285,7 @@ dist/                # executable Linux + Windows
 - `src/`: **stdlib saja** (`os`, `struct`, `argparse`, `pathlib`). Tidak ada `hashlib`, `hmac`, `random`, `secrets`, `cryptography`, dll.
 - `analysis/`: `numpy`, `matplotlib` (dependency group `analysis` di `pyproject.toml`, dikelola uv).
 - `tests/`: `pytest` (dependency group `dev`, dikelola uv). Setup: `uv sync --all-groups`, test: `uv run pytest`.
-- Cek import terlarang di `src/` jadi salah satu test. Tanpa CI, semua test dijalankan manual di Linux dan Windows.
+- Cek import terlarang di `src/` jadi salah satu test. CI menjalankan lint dan test di Linux dan Windows setiap push dan PR.
 
 ### 8.1 README
 

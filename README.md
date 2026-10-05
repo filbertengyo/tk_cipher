@@ -198,6 +198,8 @@ uv run python analysis/round_diffusion.py     # justifikasi 16 ronde
 uv run python analysis/entropy.py             # entropi dan chi-square
 uv run python analysis/histogram.py           # histogram dan visual ECB vs CBC
 uv run python analysis/sbox_stats.py          # statistik S-box
+uv run python analysis/benchmark.py           # throughput dan key setup
+uv run python analysis/run_all.py             # semua analisis di atas sekaligus
 ```
 
 Hasil analisis tersimpan di [`tests/results/`](tests/results/).

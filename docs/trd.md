@@ -4,7 +4,7 @@
 **Proyek:** IF4020 Tugas 2, Custom Block Cipher
 **Acuan:** spesifikasi tugas IF4020 Tugas 2 (sumber kebenaran), `docs/blueprint.md` (rancangan)
 **Deadline:** Sabtu, 10 Oktober 2026, 23.59 WIB (release GitHub)
-**Status:** Rancangan awal, belum ada implementasi. Menjadi dasar backlog issue (Bagian 13).
+**Status:** Development selesai. Semua requirement terimplementasi dan diuji, tinggal laporan (#23), video (#24), dan release (#25).
 
 ---
 
@@ -148,7 +148,7 @@ tk-cipher keygen [--bits {128,192,256}]
 
 | ID    | Requirement                                                                                                                                   |
 | ----- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| FR-D1 | API docs dibangkitkan dari docstring (pdoc), di-build lokal lalu di-push ke branch `gh-pages` (GitHub Pages "Deploy from a branch", tanpa GitHub Actions). Link di README dan di "About" repo. |
+| FR-D1 | API docs dibangkitkan dari docstring (pdoc), di-build ke `docs/api/` dan disajikan GitHub Pages dari folder `docs/` di `main`. Link di README. |
 | FR-D2 | API docs memuat untuk setiap fungsi/kelas publik: deskripsi, parameter + tipe data, return + tipe data, exception, contoh pemakaian, catatan. |
 | FR-D3 | README dan laporan menjelaskan tools yang dipakai untuk API docs (pdoc + GitHub Pages) dan cara membangunnya ulang.                           |
 | FR-D4 | Executable single-file untuk Linux dan Windows dibangun dengan PyInstaller, berjalan tanpa Python terpasang, perilaku sama dengan CLI.        |
@@ -260,7 +260,7 @@ Catatan desain:
 | NFR-6 | Dependensi analisis (numpy, matplotlib) dan test (pytest) dipisah dari cipher dan tidak di-import oleh `src/`.                                  |
 | NFR-7 | Pesan error jelas, tidak membocorkan perbedaan antara wrong key dan file rusak.                                                                 |
 | NFR-8 | Executable Linux dan Windows dibangun manual pakai PyInstaller di masing-masing OS, dilampirkan ke GitHub Release, salinannya di `dist/`.                             |
-| NFR-9 | Tanpa CI. Full test suite (`uv run pytest`) dijalankan manual di Linux dan Windows sebelum merge, hasilnya ditulis di PR.                      |
+| NFR-9 | CI (GitHub Actions) menjalankan ruff dan `pytest -m "not slow"` di Linux dan Windows setiap push dan PR. Full suite termasuk `slow` dijalankan lokal sebelum merge. |
 
 ---
 
@@ -404,7 +404,7 @@ Pembagian peran (sesuaikan dengan anggota):
 | Integritas, MAC from scratch, verify dulu                                             | FR-I1 sampai FR-I5, FR-F3, FR-F5 | T-11 sampai T-16               |
 | Format file self-describing                                                           | FR-F1 sampai FR-F7               | T-14, T-15, T-17               |
 | No third-party crypto                                                                 | FR-I6, NFR-1, NFR-6              | T-19                           |
-| Program input/output, Linux/Windows                                                   | FR-U1 sampai FR-U7, NFR-2        | T-18, T-20, run manual 2 OS    |
+| Program input/output, Linux/Windows                                                   | FR-U1 sampai FR-U7, NFR-2        | T-18, T-20, CI 2 OS            |
 | Avalanche, entropi, histogram di 5 mode                                               | Bagian 8                         | A-01 sampai A-05               |
 | README, laporan                                                                       | Bagian 9                         | Review akhir                   |
 | Bonus: API docs, video, executable                                                    | FR-D1 sampai FR-D5, NFR-8        | #20, #21, #24                  |
@@ -414,12 +414,14 @@ Pembagian peran (sesuaikan dengan anggota):
 
 ## 12. Definition of Done
 
-- [ ] Semua FR terimplementasi, T-01 sampai T-20 lulus di Linux dan Windows (dijalankan manual).
-- [ ] A-01 sampai A-08 untuk 5 mode tersimpan di `tests/results/`.
-- [ ] T-19 lulus (zero third-party crypto) dan `pyproject.toml` tanpa dependency runtime.
-- [ ] README, DESIGN.md + diagrams, test vector di `tests/results/`, dan draft laporan (Bab 3 sampai 9) lengkap.
-- [ ] API docs ter-host dan link ada di README.
-- [ ] Executable Linux dan Windows ada di `dist/` dan di GitHub Release.
+- [x] Semua FR terimplementasi, T-01 sampai T-20 lulus (CI Linux dan Windows untuk test non `slow`, full suite dan E2E dijalankan lokal di Linux).
+- [x] A-01 sampai A-08 untuk 5 mode tersimpan di `tests/results/` dan bisa dibuat ulang dengan `uv run python analysis/run_all.py`.
+- [x] T-19 lulus (zero third-party crypto) dan `pyproject.toml` tanpa dependency runtime.
+- [x] README, DESIGN.md + diagrams, dan test vector di `tests/results/` lengkap.
+- [ ] Draft laporan (Bab 3 sampai 9) lengkap.
+- [x] API docs ter-host dan link ada di README.
+- [x] Executable Linux dan Windows ada di `dist/`.
+- [ ] Executable dilampirkan di GitHub Release.
 - [ ] Video demo selesai dan link ada di laporan.
 - [ ] Semua issue di Bagian 13 closed.
 - [ ] Release GitHub dibuat sebelum 10 Oktober 2026 23.59 WIB.
@@ -432,33 +434,33 @@ Semua issue udah dibuat di GitHub dan semuanya **wajib**, termasuk yang asalnya 
 
 Label tahapan: `setup`, `cipher`, `modes`, `integrity`, `program`, `testing`, `analysis`, `docs`, `release`, ditambah `bonus` (asalnya bonus atau opsional spec) dan `manual` (dikerjakan manual).
 
-| #   | Judul | Label | Blocked by | Cakupan | Selesai jika |
-| --- | --- | --- | --- | --- | --- |
-| [#2](https://github.com/filbertengyo/tk_cipher/issues/2) | Scaffold project Python dan pytest | setup |  | `pyproject.toml` (uv, dependency group dev + analysis), `uv.lock`, `errors.py`, pytest, `CONTRIBUTING.md` | NFR-1, `uv run pytest` hijau |
-| [#3](https://github.com/filbertengyo/tk_cipher/issues/3) | PRNG TKRand dan S-box dinamis | cipher | #2 | `prng.py`, `sbox.py`, filter DU/NL, inverse | FR-K1 sampai FR-K4, T-02 |
-| [#4](https://github.com/filbertengyo/tk_cipher/issues/4) | Operasi ronde dan inverse-nya | cipher | #2 | `rounds.py`: 5 operasi ronde + inverse | T-01 |
-| [#5](https://github.com/filbertengyo/tk_cipher/issues/5) | Key schedule 17 round key | cipher | #3, #4 | `key_schedule.py`, round constants, 17 round key | FR-K5, T-05 |
-| [#6](https://github.com/filbertengyo/tk_cipher/issues/6) | TKCipher encrypt dan decrypt satu blok + test vector | cipher | #5 | `cipher.py`, `TKCipher(key, rounds)`, 3 test vector | FR-C1 sampai FR-C9, T-03, T-04 |
-| [#7](https://github.com/filbertengyo/tk_cipher/issues/7) | Padding PKCS#7 | modes | #2 | `padding.py` | FR-P1 sampai FR-P3, T-06, T-07 |
-| [#8](https://github.com/filbertengyo/tk_cipher/issues/8) | Mode operasi ECB, CBC, CFB, OFB, CTR | modes | #6 | `modes.py`, `Mode` enum | FR-M1 sampai FR-M6, T-08 sampai T-10 |
-| [#9](https://github.com/filbertengyo/tk_cipher/issues/9) | KDF dan CMAC-TK + constant-time compare | integrity | #6 | `kdf.py`, `mac.py` | FR-I1 sampai FR-I5, T-11 sampai T-13 |
-| [#10](https://github.com/filbertengyo/tk_cipher/issues/10) | Format file ciphertext dengan verify-then-decrypt | program | #7, #8, #9 | `fileformat.py`, header, verify-then-decrypt, tulis atomik | FR-F1 sampai FR-F7 |
-| [#11](https://github.com/filbertengyo/tk_cipher/issues/11) | CLI enc, dec, keygen | program | #10 | `cli.py`, `__main__.py`, entry point, exit code | FR-U1 sampai FR-U7, T-18 |
-| [#12](https://github.com/filbertengyo/tk_cipher/issues/12) | Sample data kecil, sedang, besar | testing, bonus | #2 | isi `tests/data/` + `make_large.py` | Bagian 6 |
-| [#13](https://github.com/filbertengyo/tk_cipher/issues/13) | Integration test dan run manual di Linux dan Windows | testing, bonus | #11, #12 | integration test + run manual Linux dan Windows | T-14 sampai T-17, T-19, NFR-9 |
-| [#14](https://github.com/filbertengyo/tk_cipher/issues/14) | Analisis avalanche plaintext dan key | analysis | #8, #10 | `analysis/avalanche.py` | A-01, A-02 |
-| [#15](https://github.com/filbertengyo/tk_cipher/issues/15) | Round diffusion dan konfirmasi 16 ronde | analysis | #6 | `analysis/round_diffusion.py`, justifikasi 16 ronde di docs | A-03 |
-| [#16](https://github.com/filbertengyo/tk_cipher/issues/16) | Analisis entropi dan chi-square | analysis, bonus | #10, #12 | `analysis/entropy.py` | A-04, A-06 |
-| [#17](https://github.com/filbertengyo/tk_cipher/issues/17) | Histogram dan visual ECB | analysis | #10, #12 | `analysis/histogram.py` | A-05 |
-| [#18](https://github.com/filbertengyo/tk_cipher/issues/18) | Statistik S-box dan review threshold | analysis, bonus | #3 | `analysis/sbox_stats.py`, review threshold | A-07 |
-| [#19](https://github.com/filbertengyo/tk_cipher/issues/19) | Benchmark file kecil, sedang, besar | analysis, bonus | #11, #12 | `analysis/benchmark.py` | A-08, FR-K6, NFR-3 |
-| [#20](https://github.com/filbertengyo/tk_cipher/issues/20) | API docs pakai pdoc di GitHub Pages | docs, bonus | #11 | docstring, pdoc, branch `gh-pages` | FR-D1 sampai FR-D3 |
-| [#21](https://github.com/filbertengyo/tk_cipher/issues/21) | Executable Linux dan Windows | release, bonus | #11 | PyInstaller, build manual per OS | FR-D4, NFR-8 |
-| [#22](https://github.com/filbertengyo/tk_cipher/issues/22) | README | docs | #11, #20, #21 | `README.md` | Bagian 9 |
-| [#23](https://github.com/filbertengyo/tk_cipher/issues/23) | Draft laporan Bab 3 sampai 9 | docs | #13, #14, #15, #16, #17, #18, #19, #27 | `docs/draft_laporan.md`, export diagram PNG | Bagian 9 |
-| [#24](https://github.com/filbertengyo/tk_cipher/issues/24) | Video demo | release, bonus, manual | #13, #14, #15, #16, #17, #18, #19, #27 | rekam demo, link di laporan | FR-D5 |
-| [#25](https://github.com/filbertengyo/tk_cipher/issues/25) | Release GitHub dan submit Google Form | release | #13, #14, #15, #16, #17, #18, #19, #20, #21, #22, #23, #24, #26, #27 | tag, release, executable, Google Form | Bagian 12 |
-| [#26](https://github.com/filbertengyo/tk_cipher/issues/26) | End-to-end test lewat CLI dan executable | testing | #11, #12, #21 | `tests/e2e/run_e2e.py` untuk python dan executable | T-20 |
-| [#27](https://github.com/filbertengyo/tk_cipher/issues/27) | Verifikasi final dan sinkron docs sebelum laporan | testing, docs | #13, #14, #15, #16, #17, #18, #19, #20, #21, #22, #26 | fresh run 2 OS, `analysis/run_all.py`, sinkron docs, cek DoD | Bagian 12 kecuali laporan dan video |
+| #   | Judul | Label | Blocked by | Cakupan | Selesai jika | Status |
+| --- | --- | --- | --- | --- | --- | --- |
+| [#2](https://github.com/filbertengyo/tk_cipher/issues/2) | Scaffold project Python dan pytest | setup |  | `pyproject.toml` (uv, dependency group dev + analysis), `uv.lock`, `errors.py`, pytest, `CONTRIBUTING.md` | NFR-1, `uv run pytest` hijau | Selesai |
+| [#3](https://github.com/filbertengyo/tk_cipher/issues/3) | PRNG TKRand dan S-box dinamis | cipher | #2 | `prng.py`, `sbox.py`, filter DU/NL, inverse | FR-K1 sampai FR-K4, T-02 | Selesai |
+| [#4](https://github.com/filbertengyo/tk_cipher/issues/4) | Operasi ronde dan inverse-nya | cipher | #2 | `rounds.py`: 5 operasi ronde + inverse | T-01 | Selesai |
+| [#5](https://github.com/filbertengyo/tk_cipher/issues/5) | Key schedule 17 round key | cipher | #3, #4 | `key_schedule.py`, round constants, 17 round key | FR-K5, T-05 | Selesai |
+| [#6](https://github.com/filbertengyo/tk_cipher/issues/6) | TKCipher encrypt dan decrypt satu blok + test vector | cipher | #5 | `cipher.py`, `TKCipher(key, rounds)`, 3 test vector | FR-C1 sampai FR-C9, T-03, T-04 | Selesai |
+| [#7](https://github.com/filbertengyo/tk_cipher/issues/7) | Padding PKCS#7 | modes | #2 | `padding.py` | FR-P1 sampai FR-P3, T-06, T-07 | Selesai |
+| [#8](https://github.com/filbertengyo/tk_cipher/issues/8) | Mode operasi ECB, CBC, CFB, OFB, CTR | modes | #6 | `modes.py`, `Mode` enum | FR-M1 sampai FR-M6, T-08 sampai T-10 | Selesai |
+| [#9](https://github.com/filbertengyo/tk_cipher/issues/9) | KDF dan CMAC-TK + constant-time compare | integrity | #6 | `kdf.py`, `mac.py` | FR-I1 sampai FR-I5, T-11 sampai T-13 | Selesai |
+| [#10](https://github.com/filbertengyo/tk_cipher/issues/10) | Format file ciphertext dengan verify-then-decrypt | program | #7, #8, #9 | `fileformat.py`, header, verify-then-decrypt, tulis atomik | FR-F1 sampai FR-F7 | Selesai |
+| [#11](https://github.com/filbertengyo/tk_cipher/issues/11) | CLI enc, dec, keygen | program | #10 | `cli.py`, `__main__.py`, entry point, exit code | FR-U1 sampai FR-U7, T-18 | Selesai |
+| [#12](https://github.com/filbertengyo/tk_cipher/issues/12) | Sample data kecil, sedang, besar | testing, bonus | #2 | isi `tests/data/` + `make_large.py` | Bagian 6 | Selesai |
+| [#13](https://github.com/filbertengyo/tk_cipher/issues/13) | Integration test dan run manual di Linux dan Windows | testing, bonus | #11, #12 | integration test, CI Linux dan Windows | T-14 sampai T-17, T-19, NFR-9 | Selesai |
+| [#14](https://github.com/filbertengyo/tk_cipher/issues/14) | Analisis avalanche plaintext dan key | analysis | #8, #10 | `analysis/avalanche.py` | A-01, A-02 | Selesai |
+| [#15](https://github.com/filbertengyo/tk_cipher/issues/15) | Round diffusion dan konfirmasi 16 ronde | analysis | #6 | `analysis/round_diffusion.py`, justifikasi 16 ronde di docs | A-03 | Selesai |
+| [#16](https://github.com/filbertengyo/tk_cipher/issues/16) | Analisis entropi dan chi-square | analysis, bonus | #10, #12 | `analysis/entropy.py` | A-04, A-06 | Selesai |
+| [#17](https://github.com/filbertengyo/tk_cipher/issues/17) | Histogram dan visual ECB | analysis | #10, #12 | `analysis/histogram.py` | A-05 | Selesai |
+| [#18](https://github.com/filbertengyo/tk_cipher/issues/18) | Statistik S-box dan review threshold | analysis, bonus | #3 | `analysis/sbox_stats.py`, review threshold | A-07 | Selesai |
+| [#19](https://github.com/filbertengyo/tk_cipher/issues/19) | Benchmark file kecil, sedang, besar | analysis, bonus | #11, #12 | `analysis/benchmark.py` | A-08, FR-K6, NFR-3 | Selesai |
+| [#20](https://github.com/filbertengyo/tk_cipher/issues/20) | API docs pakai pdoc di GitHub Pages | docs, bonus | #11 | docstring, pdoc, `docs/api/` di GitHub Pages | FR-D1 sampai FR-D3 | Selesai |
+| [#21](https://github.com/filbertengyo/tk_cipher/issues/21) | Executable Linux dan Windows | release, bonus | #11 | PyInstaller, Windows dibangun lewat workflow `build-exe` | FR-D4, NFR-8 | Selesai |
+| [#22](https://github.com/filbertengyo/tk_cipher/issues/22) | README | docs | #11, #20, #21 | `README.md` | Bagian 9 | Selesai |
+| [#23](https://github.com/filbertengyo/tk_cipher/issues/23) | Draft laporan Bab 3 sampai 9 | docs | #13, #14, #15, #16, #17, #18, #19, #27 | `docs/draft_laporan.md`, export diagram PNG | Bagian 9 | Open |
+| [#24](https://github.com/filbertengyo/tk_cipher/issues/24) | Video demo | release, bonus, manual | #13, #14, #15, #16, #17, #18, #19, #27 | rekam demo, link di laporan | FR-D5 | Open |
+| [#25](https://github.com/filbertengyo/tk_cipher/issues/25) | Release GitHub dan submit Google Form | release | #13, #14, #15, #16, #17, #18, #19, #20, #21, #22, #23, #24, #26, #27 | tag, release, executable, Google Form | Bagian 12 | Open |
+| [#26](https://github.com/filbertengyo/tk_cipher/issues/26) | End-to-end test lewat CLI dan executable | testing | #11, #12, #21 | `tests/e2e/run_e2e.py` untuk python dan executable | T-20 | Selesai |
+| [#27](https://github.com/filbertengyo/tk_cipher/issues/27) | Verifikasi final dan sinkron docs sebelum laporan | testing, docs | #13, #14, #15, #16, #17, #18, #19, #20, #21, #22, #26 | fresh run 2 OS, `analysis/run_all.py`, sinkron docs, cek DoD | Bagian 12 kecuali laporan dan video | Selesai |
 
 Urutan kritis: #2 => #3/#4 => #5 => #6 => #8/#9 => #10 => #11 => #21 => #26 => #27 => #23/#24 => #25. Begitu #27 selesai, development udah tutup dan yang tersisa cuma laporan (#23), video (#24), dan release (#25).
