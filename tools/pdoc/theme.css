@@ -1,0 +1,21 @@
+/* Warna API docs TK-Cipher, override theme.css bawaan pdoc */
+:root {
+    --pdoc-background: #fbfbfa;
+}
+
+.pdoc {
+    --text: #1f2328;
+    --muted: #59636e;
+    --link: #2a78d6;
+    --link-hover: #1b5fb0;
+    --code: #f3f5f8;
+    --active: #fff3b0;
+
+    --accent: #eef2f7;
+    --accent2: #d6dde6;
+
+    --nav-hover: rgba(42, 120, 214, 0.08);
+    --name: #1b5fb0;
+    --def: #7c3aed;
+    --annotation: #0f766e;
+}
