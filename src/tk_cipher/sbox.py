@@ -7,16 +7,33 @@ from tk_cipher.errors import InvalidKeyError
 from tk_cipher.prng import TKRand
 
 MAX_DU = 12
+"""Batas atas differential uniformity yang diterima"""
 MIN_NL = 90
+"""Batas bawah nonlinearity yang diterima"""
 KEY_SIZES = (16, 24, 32)
+"""Panjang master key yang valid dalam byte"""
 SEED_PREFIX = b"TKC-SBOX"
+"""Prefix seed TKRand biar domain S-box terpisah dari pemakaian lain"""
 
 _PARITY = tuple(x.bit_count() & 1 for x in range(256))
 
 
 @dataclass(frozen=True)
 class SBox:
-    """S-box 8-bit: tabel forward, inverse, DU, NL, dan jumlah percobaan"""
+    """S-box 8-bit hasil `generate_sbox` beserta statistik kualitasnya
+
+    Attributes:
+        forward (tuple[int, ...]): tabel substitusi 256 entri buat enkripsi
+        inverse (tuple[int, ...]): kebalikan `forward`, `inverse[forward[x]] == x`
+        differential_uniformity (int): DU tabel ini, selalu <= `MAX_DU`
+        nonlinearity (int): NL tabel ini, selalu >= `MIN_NL`
+        attempts (int): berapa kali shuffle sampai lolos filter
+
+    Example:
+        >>> s = generate_sbox(bytes(16))
+        >>> all(s.inverse[s.forward[x]] == x for x in range(256))
+        True
+    """
 
     forward: tuple[int, ...]
     inverse: tuple[int, ...]
@@ -26,8 +43,22 @@ class SBox:
 
 
 def differential_uniformity(s: Sequence[int]) -> int:
-    """Hitung differential uniformity, maks jumlah x dengan s[x] ^ s[x ^ a] == b
-    Makin kecil makin tahan kriptanalisis diferensial. Identitas = 256.
+    """Hitung differential uniformity, maks jumlah x dengan `s[x] ^ s[x ^ a] == b`
+
+    Makin kecil makin tahan kriptanalisis diferensial. Minimum teoretis 2, identitas 256
+
+    Args:
+        s (Sequence[int]): tabel S-box 256 entri
+
+    Returns:
+        int: nilai DU, maksimum atas semua `a != 0` dan `b`
+
+    Raises:
+        ValueError: `s` tidak tepat 256 entri
+
+    Example:
+        >>> differential_uniformity(list(range(256)))
+        256
     """
     if len(s) != 256:
         raise ValueError("S-box must have 256 entries")
@@ -42,7 +73,22 @@ def differential_uniformity(s: Sequence[int]) -> int:
 
 def nonlinearity(s: Sequence[int]) -> int:
     """Hitung nonlinearity lewat fast Walsh-Hadamard transform tiap mask output
-    Hasilnya 128 - (koefisien Walsh absolut terbesar) // 2. Identitas = 0.
+
+    Hasilnya `128 - max|W| // 2`. Makin besar makin tahan kriptanalisis linear,
+    maksimum buat S-box 8-bit 112, identitas 0
+
+    Args:
+        s (Sequence[int]): tabel S-box 256 entri
+
+    Returns:
+        int: nilai NL
+
+    Raises:
+        ValueError: `s` tidak tepat 256 entri
+
+    Example:
+        >>> nonlinearity(list(range(256)))
+        0
     """
     if len(s) != 256:
         raise ValueError("S-box must have 256 entries")
@@ -78,8 +124,24 @@ def _fix_points(s: list[int], rng: TKRand) -> None:
 
 
 def generate_sbox(key: bytes) -> SBox:
-    """Bangkitkan S-box deterministik dari key 16/24/32 byte, selain itu InvalidKeyError
-    Fisher-Yates pakai TKRand, buang S[x] == x dan x ^ 0xFF, ulang sampai DU/NL lolos.
+    """Bangkitkan S-box deterministik dari master key, beda key beda S-box
+
+    Langkahnya: Fisher-Yates shuffle `[0..255]` pakai `TKRand`, buang titik tetap
+    `S[x] == x` dan `S[x] == x ^ 0xFF`, lalu ulang shuffle sampai DU <= `MAX_DU` dan
+    NL >= `MIN_NL`
+
+    Args:
+        key (bytes): master key 16, 24, atau 32 byte
+
+    Returns:
+        SBox: tabel forward, inverse, dan statistiknya
+
+    Raises:
+        InvalidKeyError: panjang key bukan 16, 24, atau 32 byte
+
+    Example:
+        >>> generate_sbox(bytes(16)) == generate_sbox(bytes(16))
+        True
     """
     if len(key) not in KEY_SIZES:
         raise InvalidKeyError("key must be 16, 24, or 32 bytes")
