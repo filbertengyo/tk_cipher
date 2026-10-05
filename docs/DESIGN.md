@@ -73,7 +73,7 @@ AddRoundKey => DiagonalTranspose => DynamicSub => RowRotator => ColumnCascade
 3. ColumnCascade membawanya ke byte lain di kolom yang sama.
 4. DiagonalTranspose di ronde berikutnya menukar baris dan kolom, sehingga penyebaran berlanjut ke arah yang lain.
 
-Setelah beberapa ronde, perubahan 1 bit diharapkan menyebar ke seluruh blok. Seberapa cepat ini terjadi diukur di analisis (Bagian 11).
+Hasil ukur (Bagian 11): perubahan 1 bit sudah menyebar ke seluruh blok di **ronde 4**. Setiap bit input memengaruhi setiap bit output dan rata-rata 49.8% bit ciphertext berubah. Di ronde 3 angkanya masih 98.9% pasangan bit dan 47.0%. Jadi 16 ronde memberi margin 4x dari ronde full diffusion.
 
 **Kenapa ada dua operasi tambahan:** RowRotator saja hanya memindahkan posisi bit tanpa mencampur nilai antar-byte. ColumnCascade menambahkan pencampuran nyata antar-byte, dan carry dari penjumlahan modular menambah sifat non-linear terhadap XOR. Komponen ini mengisi peran MixColumns di AES tanpa memakai aritmetika Galois Field.
 
@@ -186,7 +186,7 @@ Klaim desain di dokumen ini dibuktikan lewat analisis setelah implementasi (`doc
 | Klaim desain                                | Dibuktikan oleh                                         |
 | ------------------------------------------- | ------------------------------------------------------- |
 | Confusion dan diffusion                     | Avalanche plaintext dan key di 5 mode                   |
-| 16 ronde cukup                              | Avalanche dan penyebaran bit per jumlah ronde           |
+| 16 ronde cukup                              | Avalanche dan penyebaran bit per jumlah ronde. **Sudah diukur:** full diffusion di ronde 4, margin 4x (`tests/results/round_diffusion.md`) |
 | Ciphertext terlihat acak                    | Entropi dan histogram, plaintext vs ciphertext          |
 | ECB membocorkan pola, mode lain tidak       | Histogram dan visual gambar terenkripsi                 |
 | S-box dinamis berkualitas                   | Statistik S-box untuk banyak key                        |
