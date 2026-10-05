@@ -1,5 +1,7 @@
 import pytest
-from tk_cipher.modes import Mode, encrypt, decrypt
+
+from tk_cipher.modes import Mode, decrypt, encrypt
+
 
 class DummyCipher:
     """
@@ -7,6 +9,7 @@ class DummyCipher:
     Hanya menggeser byte +1 untuk enkripsi dan -1 untuk dekripsi
     sebagai simulasi cipher blok dasar.
     """
+
     def encrypt_block(self, block: bytes) -> bytes:
         return bytes((b + 1) % 256 for b in block)
 
@@ -19,6 +22,7 @@ class SpyCipher(DummyCipher):
     Spy untuk melacak berapa kali metode dipanggil.
     Digunakan untuk memvalidasi AC: CFB, OFB, CTR tidak boleh memanggil decrypt_block.
     """
+
     def __init__(self):
         self.encrypt_calls = 0
         self.decrypt_calls = 0
@@ -41,6 +45,7 @@ def xor_bytes(a: bytes, b: bytes) -> bytes:
 def cipher():
     return DummyCipher()
 
+
 #
 # AC 1
 #
@@ -57,12 +62,13 @@ def test_round_trip(cipher, mode, length, key_size):
 
     assert pt == data, f"Round-trip gagal untuk {mode.name} dengan panjang {length}"
 
+
 #
 # AC 2
 #
 def test_manual_calculation_cbc(cipher):
-    p1, p2, p3 = b"\x11"*16, b"\x22"*16, b"\x33"*16
-    iv = b"\x00"*16
+    p1, p2, p3 = b"\x11" * 16, b"\x22" * 16, b"\x33" * 16
+    iv = b"\x00" * 16
     data = p1 + p2 + p3
 
     c1 = cipher.encrypt_block(xor_bytes(p1, iv))
@@ -79,9 +85,10 @@ def test_manual_calculation_cbc(cipher):
 
     assert decrypt(cipher, Mode.CBC, expected_ct, iv) == expected_pt
 
+
 def test_manual_calculation_cfb(cipher):
-    p1, p2, p3 = b"\x11"*16, b"\x22"*16, b"\x33"*16
-    iv = b"\xAA"*16
+    p1, p2, p3 = b"\x11" * 16, b"\x22" * 16, b"\x33" * 16
+    iv = b"\xaa" * 16
     data = p1 + p2 + p3
 
     c1 = xor_bytes(p1, cipher.encrypt_block(iv))
@@ -98,9 +105,10 @@ def test_manual_calculation_cfb(cipher):
 
     assert decrypt(cipher, Mode.CFB, expected_ct, iv) == expected_pt
 
+
 def test_manual_calculation_ofb(cipher):
-    p1, p2, p3 = b"\x11"*16, b"\x22"*16, b"\x33"*16
-    iv = b"\xBB"*16
+    p1, p2, p3 = b"\x11" * 16, b"\x22" * 16, b"\x33" * 16
+    iv = b"\xbb" * 16
     data = p1 + p2 + p3
 
     o1 = cipher.encrypt_block(iv)
@@ -112,11 +120,14 @@ def test_manual_calculation_ofb(cipher):
     expected_ct = c1 + c2 + c3
 
     assert encrypt(cipher, Mode.OFB, data, iv) == expected_ct
-    assert decrypt(cipher, Mode.OFB, expected_ct, iv) == data  # Enkripsi & Dekripsi OFB sama
+    assert (
+        decrypt(cipher, Mode.OFB, expected_ct, iv) == data
+    )  # Enkripsi & Dekripsi OFB sama
+
 
 def test_manual_calculation_ctr(cipher):
-    p1, p2, p3 = b"\x11"*16, b"\x22"*16, b"\x33"*16
-    iv = b"\x00"*15 + b"\x05"
+    p1, p2, p3 = b"\x11" * 16, b"\x22" * 16, b"\x33" * 16
+    iv = b"\x00" * 15 + b"\x05"
     data = p1 + p2 + p3
 
     c1 = xor_bytes(p1, cipher.encrypt_block((5).to_bytes(16, "big")))
@@ -127,12 +138,13 @@ def test_manual_calculation_ctr(cipher):
     assert encrypt(cipher, Mode.CTR, data, iv) == expected_ct
     assert decrypt(cipher, Mode.CTR, expected_ct, iv) == data
 
+
 #
 # AC 3
 #
 def test_ctr_wraparound(cipher):
     iv = b"\xff" * 16
-    p1, p2 = b"\xAA" * 16, b"\xBB" * 16
+    p1, p2 = b"\xaa" * 16, b"\xbb" * 16
     data = p1 + p2
 
     ct = encrypt(cipher, Mode.CTR, data, iv)
@@ -144,6 +156,7 @@ def test_ctr_wraparound(cipher):
 
     pt = decrypt(cipher, Mode.CTR, ct, iv)
     assert pt == data
+
 
 #
 # AC 4
@@ -162,10 +175,11 @@ def test_validation_errors(cipher):
         encrypt(cipher, Mode.CBC, b"\x00" * 16, None)
 
     for mode in [Mode.CBC, Mode.CFB, Mode.OFB, Mode.CTR]:
-        with pytest.raises(ValueError, match="16"): # pastikan pesan error nyebut 16
+        with pytest.raises(ValueError, match="16"):  # pastikan pesan error nyebut 16
             encrypt(cipher, mode, b"\x00" * 16, b"\x00" * 15)
         with pytest.raises(ValueError, match="16"):
             encrypt(cipher, mode, b"\x00" * 16, b"\x00" * 17)
+
 
 #
 # AC 5
@@ -182,6 +196,7 @@ def test_stream_modes_never_call_decrypt_block(mode):
     pt = decrypt(spy, mode, ct, iv)
     assert spy.decrypt_calls == 0, f"Dekripsi {mode.name} memanggil decrypt_block!"
     assert pt == data
+
 
 #
 # AC 6
