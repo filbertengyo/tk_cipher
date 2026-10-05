@@ -1,5 +1,3 @@
-"""TKCipher, enkripsi dan dekripsi satu blok 16 byte"""
-
 from tk_cipher.errors import InvalidKeyError
 from tk_cipher.key_schedule import expand_key
 from tk_cipher.rounds import (
