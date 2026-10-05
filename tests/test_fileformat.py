@@ -54,7 +54,9 @@ def test_structure_is_validated_before_authentication() -> None:
 
 def test_wrong_key_fails_authentication() -> None:
     blob = encrypt_bytes(b"secret", bytes(16), Mode.CTR, bytes(16))
-    with pytest.raises(AuthenticationError, match="wrong key or file has been modified"):
+    with pytest.raises(
+        AuthenticationError, match="wrong key or file has been modified"
+    ):
         decrypt_bytes(blob, bytes([1]) * 16)
 
 

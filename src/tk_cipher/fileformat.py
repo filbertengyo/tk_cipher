@@ -18,9 +18,7 @@ _VERSION = 1
 _HEADER_FORMAT = ">4sBBH16sQ"
 _HEADER_SIZE = struct.calcsize(_HEADER_FORMAT)
 _TAG_SIZE = BLOCK_SIZE
-_AUTHENTICATION_ERROR = (
-    "MAC verification failed: wrong key or file has been modified"
-)
+_AUTHENTICATION_ERROR = "MAC verification failed: wrong key or file has been modified"
 
 
 @dataclass(frozen=True)
