@@ -86,3 +86,30 @@ def test_file_round_trip_and_failed_decrypt_preserves_destination(tmp_path) -> N
 def test_ecb_rejects_user_iv() -> None:
     with pytest.raises(ValueError):
         encrypt_bytes(b"data", bytes(16), Mode.ECB, bytes(16))
+
+
+@pytest.mark.parametrize("mode", list(Mode))
+def test_flipped_header_prefix_bit_is_rejected(mode: Mode) -> None:
+    key = bytes(16)
+    iv = None if mode == Mode.ECB else bytes(range(16))
+    blob = encrypt_bytes(b"header prefix", key, mode, iv)
+    for offset in range(8):
+        for bit in range(8):
+            tampered = bytearray(blob)
+            tampered[offset] ^= 1 << bit
+            with pytest.raises((InvalidFormatError, AuthenticationError)):
+                decrypt_bytes(bytes(tampered), key)
+
+
+def test_failed_decrypt_file_creates_no_output(tmp_path) -> None:
+    encrypted = tmp_path / "cipher.bin"
+    output = tmp_path / "output.bin"
+    blob = bytearray(encrypt_bytes(b"file contents", bytes(16), Mode.CBC))
+    blob[-1] ^= 1
+    encrypted.write_bytes(blob)
+
+    with pytest.raises(AuthenticationError):
+        decrypt_file(encrypted, output, bytes(16))
+
+    assert not output.exists()
+    assert [p.name for p in tmp_path.iterdir()] == ["cipher.bin"]
