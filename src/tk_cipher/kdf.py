@@ -1,4 +1,4 @@
-"""Derive purpose-specific keys from a TK-Cipher master key."""
+"""KDF TK-Cipher: turunin key enkripsi dan key MAC terpisah dari master key"""
 
 from tk_cipher.cipher import TKCipher
 from tk_cipher.sbox import KEY_SIZES
@@ -7,24 +7,31 @@ _KDF_PREFIX = b"TKC--KDF"
 
 
 def derive_keys(master_key: bytes) -> tuple[bytes, bytes]:
-    """Derive encryption and MAC keys from a 128/192/256-bit master key.
+    """Turunin key enkripsi dan key MAC dari master key 128, 192, atau 256-bit
 
-    The derivation encrypts domain-separated counter blocks with TK-Cipher
-    keyed by ``master_key``. Labels 0x01 and 0x02 separate the two purposes.
+    TK-Cipher dengan key `master_key` dipakai sebagai PRF buat mengenkripsi blok
+    counter `b"TKC--KDF" | label | 6 byte nol | counter`. Label 0x01 buat enkripsi
+    dan 0x02 buat MAC, jadi dua key itu terpisah domainnya
 
     Args:
-        master_key: A 16-, 24-, or 32-byte TK-Cipher key.
+        master_key (bytes): master key 16, 24, atau 32 byte
 
     Returns:
-        A pair ``(k_enc, k_mac)``, each the same length as ``master_key``.
+        tuple[bytes, bytes]: pasangan `(k_enc, k_mac)`, panjang masing masing sama
+        dengan `master_key`
 
     Raises:
-        InvalidKeyError: If ``master_key`` has an unsupported length.
+        InvalidKeyError: panjang `master_key` bukan 16, 24, atau 32 byte
 
     Example:
         >>> k_enc, k_mac = derive_keys(bytes(16))
         >>> len(k_enc) == len(k_mac) == 16
         True
+        >>> k_enc != k_mac
+        True
+
+    Note:
+        Deterministik, master key sama selalu menghasilkan pasangan key yang sama
     """
     if len(master_key) not in KEY_SIZES:
         # Let TKCipher provide the package's standard invalid-key exception.

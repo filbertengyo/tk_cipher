@@ -1,4 +1,4 @@
-"""CMAC authentication and constant-time tag comparison for TK-Cipher."""
+"""CMAC-TK buat Encrypt-then-MAC dan perbandingan tag constant time"""
 
 from tk_cipher.cipher import BLOCK_SIZE, TKCipher
 
@@ -17,21 +17,26 @@ def _double(block: bytes) -> bytes:
 
 
 def cmac(key: bytes, message: bytes) -> bytes:
-    """Compute a 16-byte CMAC (OMAC1) tag using TK-Cipher.
+    """Hitung tag CMAC (OMAC1) 16 byte pakai TK-Cipher sebagai block cipher
+
+    Subkey K1 dan K2 diturunin dari `E_K(0)` lewat doubling di GF(2^128). Blok
+    terakhir yang penuh di-XOR K1, yang tidak penuh di-pad `0x80 00..` lalu di-XOR K2
 
     Args:
-        key: A 16-, 24-, or 32-byte TK-Cipher key.
-        message: The bytes to authenticate.
+        key (bytes): key MAC 16, 24, atau 32 byte, biasanya `k_mac` dari `derive_keys`
+        message (bytes): data yang mau diautentikasi, boleh kosong
 
     Returns:
-        A 16-byte authentication tag.
+        bytes: tag autentikasi 16 byte
 
     Raises:
-        InvalidKeyError: If ``key`` has an unsupported length.
+        InvalidKeyError: panjang `key` bukan 16, 24, atau 32 byte
 
     Example:
         >>> len(cmac(bytes(16), b"message"))
         16
+        >>> cmac(bytes(16), b"a") == cmac(bytes(16), b"b")
+        False
     """
     cipher = TKCipher(key)
     zero = bytes(BLOCK_SIZE)
@@ -56,18 +61,22 @@ def cmac(key: bytes, message: bytes) -> bytes:
 
 
 def constant_time_eq(a: bytes, b: bytes) -> bool:
-    """Compare byte strings without returning early on a mismatch.
+    """Bandingin dua bytes tanpa berhenti di byte pertama yang beda
+
+    Dipakai buat cek tag MAC supaya waktu eksekusi tidak bocorin posisi byte yang salah
 
     Args:
-        a: First byte string.
-        b: Second byte string.
+        a (bytes): bytes pertama
+        b (bytes): bytes kedua
 
     Returns:
-        ``True`` when the values and lengths match, otherwise ``False``.
+        bool: `True` kalau isi dan panjangnya sama, selain itu `False`
 
     Example:
         >>> constant_time_eq(b"tag", b"tag")
         True
+        >>> constant_time_eq(b"tag", b"tah")
+        False
     """
     diff = len(a) ^ len(b)
     # Iterate to the longer length, substituting zero for missing bytes, so
