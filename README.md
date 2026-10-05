@@ -4,7 +4,7 @@
 
 Dokumentasi API dibuat dari docstring dan type hints di `src/tk_cipher/` pakai [pdoc](https://pdoc.dev). Isinya deskripsi tiap modul, kelas, dan fungsi publik, parameter beserta tipe data, return, exception, contoh pemakaian, dan catatan.
 
-Link: belum di-publish.
+Link: <https://filbertengyo.github.io/tk_cipher/> (di-host dari branch `gh-pages` lewat GitHub Pages).
 
 ### Tools
 
