@@ -16,20 +16,7 @@ _PARITY = tuple(x.bit_count() & 1 for x in range(256))
 
 @dataclass(frozen=True)
 class SBox:
-    """S-box 8-bit hasil ``generate_sbox`` beserta statistiknya.
-
-    Attributes:
-        forward: Tabel substitusi, 256 entri, permutasi 0..255.
-        inverse: Kebalikan ``forward``, ``inverse[forward[x]] == x``.
-        differential_uniformity: Nilai DU dari ``forward``.
-        nonlinearity: Nilai NL dari ``forward``.
-        attempts: Jumlah shuffle sampai lolos filter kualitas.
-
-    Example:
-        >>> sbox = generate_sbox(bytes(16))
-        >>> sbox.inverse[sbox.forward[42]]
-        42
-    """
+    """S-box 8-bit: tabel forward, inverse, DU, NL, dan jumlah percobaan"""
 
     forward: tuple[int, ...]
     inverse: tuple[int, ...]
@@ -39,24 +26,8 @@ class SBox:
 
 
 def differential_uniformity(s: Sequence[int]) -> int:
-    """Hitung differential uniformity S-box 8-bit.
-
-    Maksimum, atas semua ``a`` di 1..255 dan semua ``b``, dari jumlah ``x``
-    dengan ``s[x] ^ s[x ^ a] == b``. Makin kecil makin tahan kriptanalisis
-    diferensial.
-
-    Args:
-        s: Tabel S-box, 256 entri bernilai 0..255.
-
-    Returns:
-        Differential uniformity, antara 2 dan 256.
-
-    Raises:
-        ValueError: Kalau panjang ``s`` bukan 256.
-
-    Example:
-        >>> differential_uniformity(range(256))
-        256
+    """Hitung differential uniformity, maks jumlah x dengan s[x] ^ s[x ^ a] == b
+    Makin kecil makin tahan kriptanalisis diferensial. Identitas = 256.
     """
     if len(s) != 256:
         raise ValueError("S-box must have 256 entries")
@@ -70,25 +41,8 @@ def differential_uniformity(s: Sequence[int]) -> int:
 
 
 def nonlinearity(s: Sequence[int]) -> int:
-    """Hitung nonlinearity S-box 8-bit lewat fast Walsh-Hadamard transform.
-
-    Untuk tiap mask output ``m`` di 1..255, fungsi boolean
-    ``popcount(s[x] & m) mod 2`` diubah ke bentuk ±1, di-transform, lalu
-    diambil koefisien Walsh absolut terbesar. Hasilnya
-    ``128 - (maksimum atas semua m) // 2``.
-
-    Args:
-        s: Tabel S-box, 256 entri bernilai 0..255.
-
-    Returns:
-        Nonlinearity, antara 0 dan 128.
-
-    Raises:
-        ValueError: Kalau panjang ``s`` bukan 256.
-
-    Example:
-        >>> nonlinearity(range(256))
-        0
+    """Hitung nonlinearity lewat fast Walsh-Hadamard transform tiap mask output
+    Hasilnya 128 - (koefisien Walsh absolut terbesar) // 2. Identitas = 0.
     """
     if len(s) != 256:
         raise ValueError("S-box must have 256 entries")
@@ -124,28 +78,8 @@ def _fix_points(s: list[int], rng: TKRand) -> None:
 
 
 def generate_sbox(key: bytes) -> SBox:
-    """Bangkitkan S-box dinamis yang deterministik dari key.
-
-    TKRand di-seed dengan ``b"TKC-SBOX" + key + bytes([len(key)])``. Array
-    0..255 diacak Fisher-Yates, titik ``S[x] == x`` dan ``S[x] == x ^ 0xFF``
-    dibuang lewat swap acak, lalu dicek ``DU <= MAX_DU`` dan ``NL >= MIN_NL``.
-    Kalau gagal, shuffle diulang dengan PRNG yang sama (tetap deterministik).
-
-    Args:
-        key: Key 16, 24, atau 32 byte.
-
-    Returns:
-        ``SBox`` berisi tabel forward, inverse, DU, NL, dan jumlah percobaan.
-
-    Raises:
-        InvalidKeyError: Kalau panjang ``key`` bukan 16, 24, atau 32 byte.
-
-    Example:
-        >>> sbox = generate_sbox(bytes(16))
-        >>> sorted(sbox.forward) == list(range(256))
-        True
-        >>> sbox.differential_uniformity <= MAX_DU
-        True
+    """Bangkitkan S-box deterministik dari key 16/24/32 byte, selain itu InvalidKeyError
+    Fisher-Yates pakai TKRand, buang S[x] == x dan x ^ 0xFF, ulang sampai DU/NL lolos.
     """
     if len(key) not in KEY_SIZES:
         raise InvalidKeyError("key must be 16, 24, or 32 bytes")
