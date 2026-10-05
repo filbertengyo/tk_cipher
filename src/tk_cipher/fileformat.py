@@ -1,4 +1,4 @@
-"""Authenticated file format and file helpers for TK-Cipher."""
+"""Format file terenkripsi TK-Cipher."""
 
 import os
 import struct
@@ -23,16 +23,16 @@ _AUTHENTICATION_ERROR = "MAC verification failed: wrong key or file has been mod
 
 @dataclass(frozen=True)
 class Header:
-    """Metadata stored at the start of an encrypted TK-Cipher file.
+    """Header file: mode, IV, dan panjang plaintext asli.
 
     Args:
-        mode: Block mode used to encrypt the file.
-        iv: 16-byte initialization vector, or all zeros for ECB.
-        original_length: Length of the unpadded plaintext in bytes.
-        version: Format version (currently 1).
+        mode: Mode enkripsi yang dipakai.
+        iv: IV 16 byte; ECB memakai 16 byte nol.
+        original_length: Panjang plaintext sebelum padding.
+        version: Versi format file, saat ini 1.
 
     Raises:
-        ValueError: If the metadata cannot be represented by the file format.
+        ValueError: Metadata tidak sesuai format file.
 
     Example:
         >>> len(Header(Mode.ECB, bytes(16), 0).pack())
@@ -45,13 +45,13 @@ class Header:
     version: int = _VERSION
 
     def pack(self) -> bytes:
-        """Serialize this header as the format's 32-byte big-endian header.
+        """Ubah header menjadi 32 byte sesuai format file.
 
         Returns:
-            The packed header bytes.
+            Header dalam bentuk bytes.
 
         Raises:
-            ValueError: If the version, mode, IV, or length is invalid.
+            ValueError: Versi, mode, IV, atau panjang tidak valid.
         """
         try:
             mode = Mode(self.mode)
@@ -77,16 +77,16 @@ class Header:
 
     @classmethod
     def unpack(cls, data: bytes) -> "Header":
-        """Parse and validate a 32-byte file header.
+        """Baca header 32 byte dan validasi isinya.
 
         Args:
-            data: Serialized header bytes.
+            data: Header hasil serialisasi.
 
         Returns:
-            The validated header.
+            Objek Header dari data.
 
         Raises:
-            InvalidFormatError: If the header is malformed or unsupported.
+            InvalidFormatError: Header rusak atau format tidak didukung.
         """
         if len(data) != _HEADER_SIZE:
             raise InvalidFormatError("Header must be exactly 32 bytes")
@@ -105,20 +105,20 @@ class Header:
 def encrypt_bytes(
     plaintext: bytes, master_key: bytes, mode: Mode, iv: bytes | None = None
 ) -> bytes:
-    """Encrypt and authenticate plaintext in the TK-Cipher file format.
+    """Enkripsi plaintext dan tambahkan tag CMAC.
 
     Args:
-        plaintext: Data to encrypt; empty data is supported.
-        master_key: A supported TK-Cipher master key.
-        mode: Block mode to use.
-        iv: Optional 16-byte IV. A random IV is generated when omitted.
+        plaintext: Data yang akan dienkripsi.
+        master_key: Kunci utama TK-Cipher.
+        mode: Mode blok yang digunakan.
+        iv: IV 16 byte; dibuat acak jika tidak diberikan.
 
     Returns:
-        A complete header, ciphertext, and 16-byte CMAC tag.
+        Header, ciphertext, dan tag CMAC 16 byte.
 
     Raises:
-        ValueError: If the mode or IV arguments are invalid.
-        InvalidKeyError: If the master key has an unsupported length.
+        ValueError: Mode atau IV tidak valid.
+        InvalidKeyError: Panjang master key tidak didukung.
 
     Example:
         >>> decrypt_bytes(encrypt_bytes(b"hello", bytes(16), Mode.CTR, bytes(16)), bytes(16))
@@ -148,19 +148,19 @@ def encrypt_bytes(
 
 
 def decrypt_bytes(blob: bytes, master_key: bytes) -> bytes:
-    """Authenticate a file-format blob before decrypting its ciphertext.
+    """Verifikasi tag sebelum mendekripsi ciphertext.
 
     Args:
-        blob: Complete header, ciphertext, and tag.
-        master_key: The TK-Cipher master key used during encryption.
+        blob: Header, ciphertext, dan tag dari file.
+        master_key: Master key TK-Cipher.
 
     Returns:
-        The original plaintext.
+        Plaintext asli.
 
     Raises:
-        InvalidFormatError: If the blob structure or decrypted padding/length is invalid.
-        AuthenticationError: If the tag does not match the supplied key and data.
-        InvalidKeyError: If the master key has an unsupported length.
+        InvalidFormatError: Struktur, padding, atau panjang plaintext tidak valid.
+        AuthenticationError: Tag tidak cocok dengan key atau isi file.
+        InvalidKeyError: Panjang master key tidak didukung.
     """
     if len(blob) < _HEADER_SIZE + BLOCK_SIZE + _TAG_SIZE:
         raise InvalidFormatError("Encrypted file is too short")
@@ -188,7 +188,7 @@ def decrypt_bytes(blob: bytes, master_key: bytes) -> bytes:
 
 
 def _atomic_write(dst: Path, data: bytes) -> None:
-    """Write bytes beside the destination and atomically replace it."""
+    """Tulis ke file sementara lalu ganti file tujuan."""
     temporary_path: str | None = None
     try:
         with tempfile.NamedTemporaryFile(dir=dst.parent, delete=False) as temporary:
@@ -207,22 +207,22 @@ def _atomic_write(dst: Path, data: bytes) -> None:
 def encrypt_file(
     src: Path, dst: Path, master_key: bytes, mode: Mode, iv: bytes | None = None
 ) -> Header:
-    """Encrypt a file and atomically write its authenticated representation.
+    """Enkripsi file dan simpan hasilnya secara atomik.
 
     Args:
-        src: Source plaintext path.
-        dst: Destination encrypted path.
-        master_key: TK-Cipher master key.
-        mode: Block mode to use.
-        iv: Optional 16-byte IV, generated randomly when omitted.
+        src: Path file plaintext.
+        dst: Path tujuan ciphertext.
+        master_key: Master key TK-Cipher.
+        mode: Mode blok yang digunakan.
+        iv: IV 16 byte; dibuat acak jika tidak diberikan.
 
     Returns:
-        The header written with the encrypted file.
+        Header yang disimpan bersama ciphertext.
 
     Raises:
-        OSError: If reading or atomically writing either path fails.
-        ValueError: If mode or IV arguments are invalid.
-        InvalidKeyError: If the master key has an unsupported length.
+        OSError: Gagal membaca atau menulis file.
+        ValueError: Mode atau IV tidak valid.
+        InvalidKeyError: Panjang master key tidak didukung.
     """
     blob = encrypt_bytes(src.read_bytes(), master_key, mode, iv)
     header = Header.unpack(blob[:_HEADER_SIZE])
@@ -231,24 +231,23 @@ def encrypt_file(
 
 
 def decrypt_file(src: Path, dst: Path, master_key: bytes) -> Header:
-    """Authenticate, decrypt, and atomically write a file's plaintext.
+    """Verifikasi dan dekripsi file, lalu simpan plaintext secara atomik.
 
-    The destination is not created or modified unless authentication and
-    decryption both succeed.
+    File tujuan tidak diubah jika verifikasi atau dekripsi gagal.
 
     Args:
-        src: Source encrypted path.
-        dst: Destination plaintext path.
-        master_key: TK-Cipher master key.
+        src: Path file ciphertext.
+        dst: Path tujuan plaintext.
+        master_key: Master key TK-Cipher.
 
     Returns:
-        The header read from the encrypted file.
+        Header dari file ciphertext.
 
     Raises:
-        OSError: If reading or atomically writing either path fails.
-        InvalidFormatError: If the input structure or decrypted data is invalid.
-        AuthenticationError: If authentication fails.
-        InvalidKeyError: If the master key has an unsupported length.
+        OSError: Gagal membaca atau menulis file.
+        InvalidFormatError: Struktur file atau plaintext tidak valid.
+        AuthenticationError: Tag tidak cocok dengan key atau isi file.
+        InvalidKeyError: Panjang master key tidak didukung.
     """
     blob = src.read_bytes()
     plaintext = decrypt_bytes(blob, master_key)
