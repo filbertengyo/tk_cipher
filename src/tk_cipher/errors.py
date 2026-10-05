@@ -1,6 +1,6 @@
 """Exception yang dipakai di seluruh package tk_cipher
 
-Semua exception turunan `TKCipherError`, jadi caller bisa nangkep semuanya sekaligus.
+Semua exception turunan `TKCipherError`, jadi caller bisa nangkep semuanya sekaligus
 
 Example:
     >>> try:

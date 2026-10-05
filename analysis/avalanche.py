@@ -1,7 +1,4 @@
-"""A-01 dan A-02: avalanche flip 1 bit plaintext dan flip 1 bit key di kelima mode
-
-Jalankan: uv run python analysis/avalanche.py [--seed N] [--workers N]
-"""
+"""A-01 dan A-02: avalanche flip 1 bit plaintext dan flip 1 bit key di kelima mode"""
 
 import argparse
 import csv

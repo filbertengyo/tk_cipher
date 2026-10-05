@@ -1,6 +1,6 @@
 """Format file terenkripsi TK-Cipher yang self-describing, dengan verify-then-decrypt
 
-Layout file: `header 32 byte | ciphertext N byte | tag CMAC 16 byte`, N kelipatan 16.
+Layout file: `header 32 byte | ciphertext N byte | tag CMAC 16 byte`, N kelipatan 16
 Dekripsi cukup pakai file dan master key karena mode dan IV ikut tersimpan
 """
 
@@ -132,7 +132,7 @@ def encrypt_bytes(
         plaintext (bytes): data yang mau dienkripsi, boleh kosong
         master_key (bytes): master key 16, 24, atau 32 byte
         mode (Mode): mode operasi
-        iv (bytes | None): IV 16 byte. `None` artinya IV acak dari `os.urandom`.
+        iv (bytes | None): IV 16 byte. `None` artinya IV acak dari `os.urandom`
             Harus `None` untuk ECB
 
     Returns:
@@ -230,7 +230,7 @@ def decrypt_bytes(blob: bytes, master_key: bytes) -> bytes:
 
 
 def _atomic_write(dst: Path, data: bytes) -> None:
-    """Tulis ke file sementara lalu ganti file tujuan."""
+    """Tulis ke file sementara lalu replace file tujuan"""
     temporary_path: str | None = None
     try:
         with tempfile.NamedTemporaryFile(dir=dst.parent, delete=False) as temporary:

@@ -1,7 +1,4 @@
-"""A-03: avalanche dan dependency bit per jumlah ronde 1..16 untuk justifikasi 16 ronde
-
-Jalankan: uv run python analysis/round_diffusion.py [--seed N]
-"""
+"""A-03: avalanche dan dependency bit per jumlah ronde 1..16 untuk justifikasi 16 ronde"""
 
 import argparse
 import csv
