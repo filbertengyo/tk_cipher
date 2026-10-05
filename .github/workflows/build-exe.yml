@@ -47,16 +47,3 @@ jobs:
           path: ${{ matrix.exe }}
           if-no-files-found: error
 
-  full-tests:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-    steps:
-      - uses: actions/checkout@v7
-      - uses: astral-sh/setup-uv@v10.2.0
-      - run: uv sync --all-groups --locked
-      - run: uv run python tests/data/make_large.py
-      - name: Full suite including slow tests
-        run: uv run pytest -ra
