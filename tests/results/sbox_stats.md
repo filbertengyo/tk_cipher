@@ -15,7 +15,7 @@ Skrip: `analysis/sbox_stats.py`, seed `20261006`. Data: `sbox_stats.csv` (per ke
 | DU | 10 | 12 | 11.11 | 12 |
 | NL | 90 | 98 | 93.14 | 94 |
 | attempts | 1 | 3 | 1.18 | 1 |
-| waktu (ms) | 32.5 | 83.43 | 38.99 | 35.99 |
+| waktu (ms) | 26.75 | 127.35 | 34.23 | 28.17 |
 
 | DU | Jumlah | % | |
 | ---: | ---: | ---: | :--- |
@@ -60,11 +60,11 @@ Skrip: `analysis/sbox_stats.py`, seed `20261006`. Data: `sbox_stats.csv` (per ke
 
 | Threshold | Lolos | Ekspektasi attempts | Estimasi waktu generate |
 | :--- | ---: | ---: | ---: |
-| DU <= 12, NL >= 90 (sekarang) | 87.2% | 1.15 | ~41 ms |
-| DU <= 14, NL >= 88 | 98.3% | 1.02 | ~36 ms |
-| DU <= 12, NL >= 92 | 77.0% | 1.30 | ~46 ms |
-| DU <= 10, NL >= 90 | 38.7% | 2.59 | ~92 ms |
-| DU <= 10, NL >= 92 | 35.7% | 2.80 | ~100 ms |
+| DU <= 12, NL >= 90 (sekarang) | 87.2% | 1.15 | ~54 ms |
+| DU <= 14, NL >= 88 | 98.3% | 1.02 | ~47 ms |
+| DU <= 12, NL >= 92 | 77.0% | 1.30 | ~61 ms |
+| DU <= 10, NL >= 90 | 38.7% | 2.59 | ~121 ms |
+| DU <= 10, NL >= 92 | 35.7% | 2.80 | ~131 ms |
 
 ## Keputusan
 
