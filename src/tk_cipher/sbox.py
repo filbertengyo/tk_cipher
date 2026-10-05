@@ -11,7 +11,7 @@ MIN_NL = 90
 KEY_SIZES = (16, 24, 32)
 SEED_PREFIX = b"TKC-SBOX"
 
-_PARITY = tuple(x.count("1") & 1 for x in range(256))
+_PARITY = tuple(x.bit_count() & 1 for x in range(256))
 
 
 @dataclass(frozen=True)
