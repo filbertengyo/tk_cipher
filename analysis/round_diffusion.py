@@ -121,21 +121,31 @@ def write_summary(
     lines = [
         "# Round Diffusion (A-03)",
         "",
-        f"Skrip: `analysis/round_diffusion.py`, seed `{seed}`. Data: "
-        "`round_diffusion.csv`, grafik: `round_diffusion.png`.",
+        (
+            f"Skrip: `analysis/round_diffusion.py`, seed `{seed}`. Data: "
+            "`round_diffusion.csv`, grafik: `round_diffusion.png`."
+        ),
         "",
         "## Metode",
         "",
-        f"- {N_KEYS} key 128-bit acak x {PT_PER_KEY} plaintext acak per key. Tiap "
-        f"plaintext di-flip di **semua** {BITS} bit satu per satu, jadi {n} sampel "
-        f"per ronde dan {N_KEYS * PT_PER_KEY} sampel per bit input.",
+        (
+            f"- {N_KEYS} key 128-bit acak x {PT_PER_KEY} plaintext acak per key. "
+            f"Tiap plaintext di-flip di **semua** {BITS} bit satu per satu, jadi "
+            f"{n} sampel per ronde dan {N_KEYS * PT_PER_KEY} sampel per bit input."
+        ),
         "- Avalanche: persen bit ciphertext yang berubah per sampel.",
-        "- Dependency: pasangan (bit input i, bit output j) yang pernah berubah, "
-        f"dari maksimum {BITS**2}.",
-        "- SAC min/max: peluang terkecil/terbesar bit output j berubah saat bit i "
-        "di-flip (ideal 0.5).",
-        f"- Full diffusion: semua {BITS**2} pasangan ketemu dan "
-        f"|mean avalanche - 50| <= {AVALANCHE_TOL} poin persen.",
+        (
+            "- Dependency: pasangan (bit input i, bit output j) yang pernah berubah, "
+            f"dari maksimum {BITS**2}."
+        ),
+        (
+            "- SAC min/max: peluang terkecil/terbesar bit output j berubah saat "
+            "bit i di-flip (ideal 0.5)."
+        ),
+        (
+            f"- Full diffusion: semua {BITS**2} pasangan ketemu dan "
+            f"|mean avalanche - 50| <= {AVALANCHE_TOL} poin persen."
+        ),
         "- Cipher dipanggil lewat `TKCipher(key, rounds=r)` dari package `tk_cipher`.",
         "",
         "## Hasil",
