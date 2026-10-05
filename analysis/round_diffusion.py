@@ -78,8 +78,14 @@ def plot(rows: list[dict], full: int | None, seed: int, path: pathlib.Path) -> N
     for ax, ys, title, ref, ref_label in panels:
         ax.axhline(ref, color=MUTED, lw=1, ls="--", zorder=1)
         ax.annotate(
-            ref_label, (16, ref), xytext=(0, 4), textcoords="offset points",
-            ha="right", va="bottom", color=MUTED, fontsize=9,
+            ref_label,
+            (16, ref),
+            xytext=(0, 4),
+            textcoords="offset points",
+            ha="right",
+            va="bottom",
+            color=MUTED,
+            fontsize=9,
         )
         if full is not None:
             ax.axvline(full, color=MUTED, lw=1, ls=":", zorder=1)
@@ -96,18 +102,29 @@ def plot(rows: list[dict], full: int | None, seed: int, path: pathlib.Path) -> N
         ax.tick_params(colors=MUTED)
     ax1.fill_between(r, mean - std, mean + std, color=BLUE, alpha=0.15, lw=0)
     ax1.annotate(
-        "~1 std", (2, mean[1] + std[1]), xytext=(4, 2), textcoords="offset points",
-        color=MUTED, fontsize=9,
+        "~1 std",
+        (2, mean[1] + std[1]),
+        xytext=(4, 2),
+        textcoords="offset points",
+        color=MUTED,
+        fontsize=9,
     )
     if full is not None:
         ax2.annotate(
-            f"full diffusion: ronde {full}", (full, 50), xytext=(6, 0),
-            textcoords="offset points", color=INK, fontsize=9,
+            f"full diffusion: ronde {full}",
+            (full, 50),
+            xytext=(6, 0),
+            textcoords="offset points",
+            color=INK,
+            fontsize=9,
         )
     n = rows[0]["samples"]
     fig.suptitle(
         f"TK-Cipher round diffusion  ·  {n} sampel per ronde  ·  seed {seed}",
-        x=0.01, ha="left", fontsize=12, color=INK,
+        x=0.01,
+        ha="left",
+        fontsize=12,
+        color=INK,
     )
     fig.tight_layout()
     fig.savefig(path, dpi=150, facecolor="white")
