@@ -270,12 +270,12 @@ tk_cipher/
 
 <div align="center">
 
-| NIM | Name |
-|:---:|:---|
-| 13523126 | Brian Ricardo Tamin |
-| 13523154 | Theo Kurniady |
-| 13523161 | Arlow Emmanuel Hergara |
-| 13523163 | Filbert Engyo |
+| NIM | Name | Contribution |
+|:---:|:---|:---|
+| 13523126 | Brian Ricardo Tamin | Desain awal TK-Cipher, operasi ronde (DiagonalTranspose, RowRotator, ColumnCascade) beserta inverse-nya, key schedule 17 round key, CLI, analisis avalanche dan histogram, integration dan end-to-end test, executable, API docs, README |
+| 13523154 | Theo Kurniady | KDF untuk key enkripsi dan key MAC, CMAC-TK, format file terautentikasi dengan verify-then-decrypt |
+| 13523161 | Arlow Emmanuel Hergara | Padding PKCS#7, lima mode operasi (ECB, CBC, CFB, OFB, CTR) |
+| 13523163 | Filbert Engyo | PRNG TKRand dan S-box dinamis, enkripsi dan dekripsi blok TKCipher beserta test vector, analisis round diffusion (justifikasi 16 ronde), statistik S-box, entropi dan chi-square |
 
 </div>
 
