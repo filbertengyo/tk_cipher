@@ -189,7 +189,7 @@ Klaim desain di dokumen ini dibuktikan lewat analisis setelah implementasi (`doc
 | 16 ronde cukup                              | Avalanche dan penyebaran bit per jumlah ronde. **Sudah diukur:** full diffusion di ronde 4, margin 4x (`tests/results/round_diffusion.md`) |
 | Ciphertext terlihat acak                    | Entropi dan histogram, plaintext vs ciphertext          |
 | ECB membocorkan pola, mode lain tidak       | Histogram dan visual gambar terenkripsi                 |
-| S-box dinamis berkualitas                   | Statistik S-box untuk banyak key                        |
+| S-box dinamis berkualitas                   | Statistik S-box untuk banyak key. **Sudah diukur:** 300 key, DU 10 sampai 12, NL 90 sampai 98, rata-rata 1.18 attempts; threshold dipertahankan (`tests/results/sbox_stats.md`) |
 | Integritas berjalan                         | Test tamper dan key salah                               |
 
 ---
