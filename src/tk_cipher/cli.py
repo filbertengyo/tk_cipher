@@ -146,8 +146,6 @@ def main(argv: list[str] | None = None) -> int:
     Returns:
         int: 0 sukses, 1 argumen atau key salah, 2 file rusak, 3 MAC gagal
 
-    Raises:
-        Tidak ada, semua error dipetakan ke exit code
 
     Example:
         >>> main(["dec", "-i", "missing.enc", "-o", "out.bin", "-k", "00" * 16])
