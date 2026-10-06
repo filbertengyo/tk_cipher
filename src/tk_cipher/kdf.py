@@ -1,7 +1,6 @@
 """KDF TK-Cipher: turunin key enkripsi dan key MAC terpisah dari master key"""
 
 from tk_cipher.cipher import TKCipher
-from tk_cipher.sbox import KEY_SIZES
 
 _KDF_PREFIX = b"TKC--KDF"
 
@@ -33,10 +32,6 @@ def derive_keys(master_key: bytes) -> tuple[bytes, bytes]:
     Note:
         Deterministik, master key sama selalu menghasilkan pasangan key yang sama
     """
-    if len(master_key) not in KEY_SIZES:
-        # Let TKCipher provide the package's standard invalid-key exception.
-        TKCipher(master_key)
-
     cipher = TKCipher(master_key)
     length = len(master_key)
 

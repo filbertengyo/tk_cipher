@@ -19,8 +19,8 @@ seed,file,mode,ciphertext_bytes,chi2,critical,lolos,repeated_blocks
 20261006,repetitive.bin,CFB,65552,266.158,293.248,True,0
 20261006,repetitive.bin,OFB,65552,213.874,293.248,True,0
 20261006,repetitive.bin,CTR,65552,224.84,293.248,True,0
-20261006,text_small.txt,ECB,20480,391.975,293.248,False,253
-20261006,text_small.txt,CBC,20480,248.975,293.248,True,0
-20261006,text_small.txt,CFB,20480,240.375,293.248,True,0
-20261006,text_small.txt,OFB,20480,245.2,293.248,True,0
-20261006,text_small.txt,CTR,20480,278.6,293.248,True,0
+20261006,text_small.txt,ECB,20384,421.024,293.248,False,385
+20261006,text_small.txt,CBC,20384,304.728,293.248,False,0
+20261006,text_small.txt,CFB,20384,238.217,293.248,True,0
+20261006,text_small.txt,OFB,20384,245.576,293.248,True,0
+20261006,text_small.txt,CTR,20384,234.122,293.248,True,0

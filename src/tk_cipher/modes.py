@@ -21,7 +21,7 @@ class Mode(IntEnum):
 
 
 def encrypt_ecb(cipher: TKCipher, data: bytes) -> bytes:
-    """Enkripsi data pakai mode ECB: tiap blok dienkripsi sendiri sendiri, blok sama menghasilkan ciphertext sama
+    """Enkripsi data pakai mode ECB, tiap blok diproses sendiri sendiri
 
     Args:
         cipher (TKCipher): cipher yang sudah dibuat dengan key
@@ -53,7 +53,7 @@ def encrypt_ecb(cipher: TKCipher, data: bytes) -> bytes:
 
 
 def decrypt_ecb(cipher: TKCipher, data: bytes) -> bytes:
-    """Dekripsi data pakai mode ECB: tiap blok dienkripsi sendiri sendiri, blok sama menghasilkan ciphertext sama
+    """Dekripsi data pakai mode ECB, tiap blok diproses sendiri sendiri
 
     Args:
         cipher (TKCipher): cipher yang sudah dibuat dengan key
@@ -231,7 +231,7 @@ def decrypt_cfb(cipher: TKCipher, data: bytes, iv: bytes) -> bytes:
 
 
 def encrypt_ofb(cipher: TKCipher, data: bytes, iv: bytes) -> bytes:
-    """Enkripsi data pakai mode OFB: keystream `O_i = E(O_{i-1})` dengan `O_{-1} = iv`, lalu `C_i = P_i ^ O_i`
+    """Enkripsi data pakai mode OFB, keystream `O_i = E(O_{i-1})` dari `iv` di-XOR ke data
 
     Args:
         cipher (TKCipher): cipher yang sudah dibuat dengan key
@@ -267,7 +267,7 @@ def encrypt_ofb(cipher: TKCipher, data: bytes, iv: bytes) -> bytes:
 
 
 def decrypt_ofb(cipher: TKCipher, data: bytes, iv: bytes) -> bytes:
-    """Dekripsi data pakai mode OFB: keystream `O_i = E(O_{i-1})` dengan `O_{-1} = iv`, lalu `C_i = P_i ^ O_i`
+    """Dekripsi data pakai mode OFB, keystream `O_i = E(O_{i-1})` dari `iv` di-XOR ke data
 
     Args:
         cipher (TKCipher): cipher yang sudah dibuat dengan key

@@ -3,7 +3,7 @@
 - OS: Linux 6.18.44-1-lts (x86_64)
 - Python runner: 3.14.7
 - Target: `tk-cipher-linux`
-- Hasil: 60 dari 60 skenario lulus
+- Hasil: 67 dari 67 skenario lulus
 
 | Skenario | Hasil | Detail |
 | --- | --- | --- |
@@ -24,6 +24,13 @@
 | round trip image.bmp ofb | lulus | 196662 byte identik |
 | round trip image.bmp ctr | lulus | 196662 byte identik |
 | round trip image.bmp ctr --iv | lulus | 196662 byte identik |
+| round trip large.bin ecb | lulus | 5242880 byte identik |
+| round trip large.bin cbc | lulus | 5242880 byte identik |
+| round trip large.bin cbc --iv | lulus | 5242880 byte identik |
+| round trip large.bin cfb | lulus | 5242880 byte identik |
+| round trip large.bin ofb | lulus | 5242880 byte identik |
+| round trip large.bin ctr | lulus | 5242880 byte identik |
+| round trip large.bin ctr --iv | lulus | 5242880 byte identik |
 | round trip medium.bin ecb | lulus | 1048576 byte identik |
 | round trip medium.bin cbc | lulus | 1048576 byte identik |
 | round trip medium.bin cbc --iv | lulus | 1048576 byte identik |

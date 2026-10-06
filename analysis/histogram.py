@@ -1,7 +1,4 @@
-"""A-05: histogram byte plaintext vs ciphertext per file dan mode, plus visual ECB vs CBC
-
-Jalankan: uv run python analysis/histogram.py [--seed N] [--workers N]
-"""
+"""A-05: histogram byte plaintext vs ciphertext per file dan mode, plus visual ECB vs CBC"""
 
 import argparse
 import pathlib

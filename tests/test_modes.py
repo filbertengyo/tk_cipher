@@ -4,11 +4,7 @@ from tk_cipher.modes import Mode, decrypt, encrypt
 
 
 class DummyCipher:
-    """
-    Mock untuk TKCipher.
-    Hanya menggeser byte +1 untuk enkripsi dan -1 untuk dekripsi
-    sebagai simulasi cipher blok dasar.
-    """
+    """Mock TKCipher yang cuma geser byte +1 buat enkripsi dan -1 buat dekripsi"""
 
     def encrypt_block(self, block: bytes) -> bytes:
         return bytes((b + 1) % 256 for b in block)
@@ -18,10 +14,7 @@ class DummyCipher:
 
 
 class SpyCipher(DummyCipher):
-    """
-    Spy untuk melacak berapa kali metode dipanggil.
-    Digunakan untuk memvalidasi AC: CFB, OFB, CTR tidak boleh memanggil decrypt_block.
-    """
+    """Spy buat ngecek CFB, OFB, CTR tidak pernah manggil decrypt_block"""
 
     def __init__(self):
         self.encrypt_calls = 0
@@ -37,7 +30,7 @@ class SpyCipher(DummyCipher):
 
 
 def xor_bytes(a: bytes, b: bytes) -> bytes:
-    """Helper XOR dua byte string."""
+    """XOR dua byte string"""
     return bytes(x ^ y for x, y in zip(a, b))
 
 
@@ -46,14 +39,10 @@ def cipher():
     return DummyCipher()
 
 
-#
-# AC 1
-#
 @pytest.mark.parametrize("mode", [Mode.ECB, Mode.CBC, Mode.CFB, Mode.OFB, Mode.CTR])
 @pytest.mark.parametrize("length", [16, 32, 48, 160])
 @pytest.mark.parametrize("key_size", [128, 192, 256])
 def test_round_trip(cipher, mode, length, key_size):
-    # Dummy data dan IV
     data = bytes(i % 256 for i in range(length))
     iv = None if mode == Mode.ECB else bytes((i * 3) % 256 for i in range(16))
 
@@ -63,9 +52,6 @@ def test_round_trip(cipher, mode, length, key_size):
     assert pt == data, f"Round-trip gagal untuk {mode.name} dengan panjang {length}"
 
 
-#
-# AC 2
-#
 def test_manual_calculation_cbc(cipher):
     p1, p2, p3 = b"\x11" * 16, b"\x22" * 16, b"\x33" * 16
     iv = b"\x00" * 16
@@ -139,9 +125,6 @@ def test_manual_calculation_ctr(cipher):
     assert decrypt(cipher, Mode.CTR, expected_ct, iv) == data
 
 
-#
-# AC 3
-#
 def test_ctr_wraparound(cipher):
     iv = b"\xff" * 16
     p1, p2 = b"\xaa" * 16, b"\xbb" * 16
@@ -158,9 +141,6 @@ def test_ctr_wraparound(cipher):
     assert pt == data
 
 
-#
-# AC 4
-#
 def test_validation_errors(cipher):
     with pytest.raises(ValueError):
         encrypt(cipher, Mode.ECB, b"", None)
@@ -181,9 +161,6 @@ def test_validation_errors(cipher):
             encrypt(cipher, mode, b"\x00" * 16, b"\x00" * 17)
 
 
-#
-# AC 5
-#
 @pytest.mark.parametrize("mode", [Mode.CFB, Mode.OFB, Mode.CTR])
 def test_stream_modes_never_call_decrypt_block(mode):
     spy = SpyCipher()
@@ -198,9 +175,6 @@ def test_stream_modes_never_call_decrypt_block(mode):
     assert pt == data
 
 
-#
-# AC 6
-#
 def test_ecb_cbc_identical_blocks(cipher):
     pt = b"A" * 16 + b"A" * 16
 
