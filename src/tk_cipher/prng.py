@@ -15,8 +15,6 @@ def rotl(x: int, k: int) -> int:
     Returns:
         int: hasil rotasi, tetap 32-bit
 
-    Raises:
-        Tidak ada
 
     Example:
         >>> hex(rotl(0x80000000, 1))
@@ -40,8 +38,6 @@ def mix(a: int, b: int, c: int, d: int) -> tuple[int, int, int, int]:
     Returns:
         tuple[int, int, int, int]: empat word state baru
 
-    Raises:
-        Tidak ada
 
     Example:
         >>> mix(0, 0, 0, 0)
@@ -92,8 +88,6 @@ class TKRand:
         Returns:
             int: bilangan 0 sampai 2**32 - 1
 
-        Raises:
-            Tidak ada
 
         Example:
             >>> 0 <= TKRand(b"x").next32() < 2**32

@@ -43,8 +43,6 @@ def diagonal_transpose(state: list[int]) -> list[int]:
     Returns:
         list[int]: state yang sudah ditranspose
 
-    Raises:
-        Tidak ada
 
     Example:
         >>> diagonal_transpose(list(range(16)))[:4]
@@ -92,8 +90,6 @@ def row_rotator(state: list[int]) -> list[int]:
     Returns:
         list[int]: state dengan semua baris dirotasi
 
-    Raises:
-        Tidak ada
 
     Example:
         >>> row_rotator([0x80] + [0] * 15)[:4]
@@ -111,8 +107,6 @@ def inv_row_rotator(state: list[int]) -> list[int]:
     Returns:
         list[int]: state dengan semua baris dirotasi balik
 
-    Raises:
-        Tidak ada
 
     Example:
         >>> inv_row_rotator([0, 0, 0, 1] + [0] * 12)[:4]
@@ -132,8 +126,6 @@ def column_cascade(state: list[int]) -> list[int]:
     Returns:
         list[int]: state dengan semua kolom di-cascade
 
-    Raises:
-        Tidak ada
 
     Example:
         >>> column_cascade([1] + [0] * 15)[::4]
@@ -161,8 +153,6 @@ def inv_column_cascade(state: list[int]) -> list[int]:
     Returns:
         list[int]: state dengan cascade dibatalkan
 
-    Raises:
-        Tidak ada
 
     Example:
         >>> s = list(range(16))
