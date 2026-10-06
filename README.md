@@ -272,10 +272,10 @@ tk_cipher/
 
 | NIM | Name | Contribution |
 |:---:|:---|:---|
-| 13523126 | Brian Ricardo Tamin | - Desain awal cipher<br>- Operasi ronde dan inverse<br>- Key schedule<br>- CLI<br>- Analisis avalanche dan histogram<br>- Integration dan E2E test<br>- Executable dan API docs |
-| 13523154 | Theo Kurniady | - KDF<br>- CMAC-TK<br>- Format file verify-then-decrypt |
-| 13523161 | Arlow Emmanuel Hergara | - Padding PKCS#7<br>- Mode ECB, CBC, CFB, OFB, CTR |
-| 13523163 | Filbert Engyo | - PRNG TKRand dan S-box dinamis<br>- Enkripsi dan dekripsi blok<br>- Test vector<br>- Analisis round diffusion, S-box, entropi, chi-square |
+| 13523126 | Brian Ricardo Tamin | - Desain awal cipher<br>- Operasi ronde dan inverse<br>- CLI dan executable<br>- API docs dan README |
+| 13523154 | Theo Kurniady | - KDF dan CMAC-TK<br>- Format file verify-then-decrypt<br>- Key schedule<br>- Integration dan E2E test |
+| 13523161 | Arlow Emmanuel Hergara | - Padding PKCS#7<br>- Mode ECB, CBC, CFB, OFB, CTR<br>- Analisis avalanche dan histogram<br>- Benchmark |
+| 13523163 | Filbert Engyo | - PRNG TKRand dan S-box dinamis<br>- Enkripsi dan dekripsi blok dan test vector<br>- Analisis round diffusion dan statistik S-box<br>- Analisis entropi dan chi-square |
 
 </div>
 
