@@ -231,14 +231,13 @@ Link: <https://filbertengyo.github.io/tk_cipher/api/>
 
 - **pdoc**: generate HTML statis dari docstring format Google (`Args`, `Returns`, `Raises`, `Example`, `Note`). Ada di dependency group `dev`.
 - **GitHub Pages**: repo menyajikan folder `docs/` di branch `main`, jadi HTML hasil pdoc disimpan di `docs/api/` dan langsung terbit setelah merge, tanpa server backend.
-- **Tema**: `tools/pdoc/theme.css` dan `custom.css` mengganti warna, font, dan sudut kotak tampilan bawaan pdoc.
 - **Doctest**: semua contoh di docstring ikut dijalankan `uv run pytest` (`--doctest-modules`), jadi contoh di docs selalu sesuai kode.
 
 ### Build ulang
 
 ```bash
 uv sync --all-groups
-uv run pdoc --docformat google -t tools/pdoc --footer-text "TK-Cipher 0.1.0" -o docs/api tk_cipher
+uv run python tools/build_api_docs.py
 ```
 
 Buka `docs/api/index.html` di browser buat lihat hasilnya. Setiap kali docstring berubah, build ulang lalu commit `docs/api/` supaya halaman online ikut ter-update.
@@ -260,7 +259,7 @@ tk_cipher/
 │   ├── diagrams/         # diagram Mermaid
 │   ├── api/              # API docs hasil pdoc (GitHub Pages)
 │   └── build_exe.md      # cara build executable
-├── tools/pdoc/           # tema API docs
+├── tools/                # skrip build API docs
 ├── dist/                 # executable Linux dan Windows
 ├── tk-cipher.spec        # spec PyInstaller
 └── pyproject.toml
