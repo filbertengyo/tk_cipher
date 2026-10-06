@@ -61,7 +61,7 @@ def mix(a: int, b: int, c: int, d: int) -> tuple[int, int, int, int]:
 class TKRand:
     """PRNG ARX 4x32-bit deterministik, seed sama selalu menghasilkan deret sama
 
-    State awal `[G, rotl(G,8), rotl(G,16), rotl(G,24)]` dengan `G = 0x9E3779B9`.
+    State awal `[G, rotl(G,8), rotl(G,16), rotl(G,24)]` dengan `G = 0x9E3779B9`
     Seed di-absorb per byte ke state lalu di-mix, ditutup 32 kali mix warm-up
 
     Args:

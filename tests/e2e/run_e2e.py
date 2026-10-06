@@ -1,10 +1,4 @@
-"""End-to-end test tk-cipher lewat subprocess, target python -m tk_cipher atau executable
-
-Jalankan:
-    uv run python tests/e2e/run_e2e.py
-    uv run python tests/e2e/run_e2e.py --exe dist/tk-cipher-linux
-    uv run python tests/e2e/run_e2e.py --exe dist/tk-cipher-windows.exe
-"""
+"""End-to-end test tk-cipher lewat subprocess ke python -m tk_cipher atau executable"""
 
 import argparse
 import itertools

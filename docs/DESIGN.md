@@ -179,18 +179,19 @@ Program berupa CLI dengan tiga perintah: enkripsi, dekripsi, dan pembangkitan ke
 
 ---
 
-## 11. Yang Akan Diukur
+## 11. Klaim Desain dan Hasil Ukur
 
-Klaim desain di dokumen ini dibuktikan lewat analisis setelah implementasi (`docs/trd.md` Bagian 8):
+Semua klaim desain di dokumen ini sudah diukur pada implementasi akhir (`docs/trd.md` Bagian 8). Angka lengkapnya ada di `tests/results/` dan bisa dibuat ulang dengan `uv run python analysis/run_all.py`.
 
 | Klaim desain                                | Dibuktikan oleh                                         |
 | ------------------------------------------- | ------------------------------------------------------- |
-| Confusion dan diffusion                     | Avalanche plaintext dan key di 5 mode                   |
-| 16 ronde cukup                              | Avalanche dan penyebaran bit per jumlah ronde. **Sudah diukur:** full diffusion di ronde 4, margin 4x (`tests/results/round_diffusion.md`) |
-| Ciphertext terlihat acak                    | Entropi dan histogram, plaintext vs ciphertext          |
-| ECB membocorkan pola, mode lain tidak       | Histogram dan visual gambar terenkripsi                 |
-| S-box dinamis berkualitas                   | Statistik S-box untuk banyak key. **Sudah diukur:** 300 key, DU 10 sampai 12, NL 90 sampai 98, rata-rata 1.18 attempts; threshold dipertahankan (`tests/results/sbox_stats.md`) |
-| Integritas berjalan                         | Test tamper dan key salah                               |
+| Confusion dan diffusion                     | Avalanche plaintext dan key di 5 mode, sekitar 50% (`avalanche_summary.md`) |
+| 16 ronde cukup                              | Full diffusion di ronde 4, margin 4x (`round_diffusion.md`) |
+| Ciphertext terlihat acak                    | Entropi mendekati 8 bit per byte dan chi-square (`entropy_summary.md`), histogram rata |
+| ECB membocorkan pola, mode lain tidak       | Histogram `repetitive.bin` dan `ecb_vs_cbc.png`         |
+| S-box dinamis berkualitas                   | Statistik S-box 300 key, threshold dipertahankan (`sbox_stats.md`) |
+| Integritas berjalan                         | Integration test dan E2E: tamper dan key salah ditolak  |
+| Performa implementasi Python                | Benchmark file kecil, sedang, besar dan key setup (`benchmark.md`) |
 
 ---
 

@@ -1,7 +1,4 @@
-"""A-04 dan A-06: entropi Shannon plaintext vs ciphertext dan chi-square byte ciphertext
-
-Jalankan: uv run python analysis/entropy.py [--seed N] [--include-large]
-"""
+"""A-04 dan A-06: entropi Shannon plaintext vs ciphertext dan chi-square byte ciphertext"""
 
 import argparse
 import csv

@@ -1,7 +1,4 @@
-"""A-07: statistik S-box dinamis (DU, NL, attempts, waktu) dan review threshold
-
-Jalankan: uv run python analysis/sbox_stats.py [--seed N]
-"""
+"""A-07: statistik S-box dinamis (DU, NL, attempts, waktu) dan review threshold"""
 
 import argparse
 import csv
@@ -28,7 +25,7 @@ SEED = 20261006
 KEYS_PER_SIZE = 100
 CANDIDATES_PER_KEY = 2  # kandidat sebelum filter, dari stream TKRand yang sama
 RESULTS = pathlib.Path(__file__).resolve().parent.parent / "tests" / "results"
-# (max DU, min NL) yang dibandingkan; yang pertama threshold sekarang
+# pasangan (max DU, min NL) yang dibandingin, yang pertama threshold sekarang
 THRESHOLDS = [(MAX_DU, MIN_NL), (14, 88), (12, 92), (10, 90), (10, 92)]
 
 
@@ -52,9 +49,7 @@ def generate_stats(keys: list[bytes]) -> list[dict]:
 
 
 def candidate_stats(keys: list[bytes]) -> list[dict]:
-    """Ukur kandidat S-box sebelum filter kualitas, persis seperti generate_sbox
-    membangkitkannya (shuffle + fix-up dari TKRand per key).
-    """
+    """Ukur kandidat S-box sebelum filter kualitas, persis kayak generate_sbox"""
     rows = []
     for key in keys:
         rng = TKRand(SEED_PREFIX + key + bytes([len(key)]))

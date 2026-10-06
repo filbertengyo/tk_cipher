@@ -1,7 +1,7 @@
 """Block cipher TK-Cipher: SPN 128-bit dengan 16 ronde dan whitening di akhir
 
 Modul ini cuma ngurus satu blok 16 byte. Buat data panjang pakai `tk_cipher.modes`,
-buat file lengkap dengan MAC pakai `tk_cipher.fileformat`.
+buat file lengkap dengan MAC pakai `tk_cipher.fileformat`
 """
 
 from tk_cipher.errors import InvalidKeyError
@@ -27,7 +27,7 @@ class TKCipher:
     """Block cipher 128-bit dengan S-box dinamis dan 17 round key dari master key
 
     S-box dan round key dibangun sekali waktu objek dibuat, jadi satu objek bisa
-    dipakai berkali kali buat banyak blok dengan key yang sama.
+    dipakai berkali kali buat banyak blok dengan key yang sama
 
     Args:
         key (bytes): master key 16, 24, atau 32 byte (128, 192, 256-bit)

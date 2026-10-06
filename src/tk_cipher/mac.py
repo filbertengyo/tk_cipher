@@ -7,7 +7,7 @@ _BLOCK_MASK = (1 << (BLOCK_SIZE * 8)) - 1
 
 
 def _double(block: bytes) -> bytes:
-    """Double a 128-bit CMAC subkey in GF(2^128)."""
+    """Doubling subkey CMAC 128-bit di GF(2^128)"""
     value = int.from_bytes(block, "big")
     carry = value >> 127
     value = (value << 1) & _BLOCK_MASK
@@ -79,8 +79,7 @@ def constant_time_eq(a: bytes, b: bytes) -> bool:
         False
     """
     diff = len(a) ^ len(b)
-    # Iterate to the longer length, substituting zero for missing bytes, so
-    # differing lengths do not cause an early exit from the comparison loop.
+    # loop sampai panjang terpanjang biar beda panjang tidak bikin keluar lebih awal
     for i in range(max(len(a), len(b))):
         x = a[i] if i < len(a) else 0
         y = b[i] if i < len(b) else 0
