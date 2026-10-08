@@ -1,29 +1,12 @@
-# Python
 __pycache__/
 *.py[cod]
 *.egg-info/
-
-# Virtual environment
 .venv/
-
-# Test and tool caches
 .pytest_cache/
-
-# Build output (PyInstaller work files, pdoc output)
 build/
-
-# Generated test data, see tests/data/make_large.py
 tests/data/large.bin
-
-# OS files
 .DS_Store
 Thumbs.db
-
-# Local only, not committed
-context/
-CLAUDE.md
-
-# Key dan hasil enkripsi lokal, jangan sampai ter-commit
 key.txt
 *.enc
 *.key
