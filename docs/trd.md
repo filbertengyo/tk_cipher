@@ -269,7 +269,6 @@ Catatan desain:
 ```
 .
 ├── README.md
-├── CONTRIBUTING.md             # setup uv, alur branch dan PR, test manual 2 OS
 ├── pyproject.toml              # package tk_cipher, script tk-cipher, tanpa dependency runtime, dependency group dev + analysis
 ├── uv.lock                     # dikelola uv, di-commit
 ├── .python-version
@@ -436,7 +435,7 @@ Label tahapan: `setup`, `cipher`, `modes`, `integrity`, `program`, `testing`, `a
 
 | #   | Judul | Label | Blocked by | Cakupan | Selesai jika | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| [#2](https://github.com/filbertengyo/tk_cipher/issues/2) | Scaffold project Python dan pytest | setup |  | `pyproject.toml` (uv, dependency group dev + analysis), `uv.lock`, `errors.py`, pytest, `CONTRIBUTING.md` | NFR-1, `uv run pytest` hijau | Selesai |
+| [#2](https://github.com/filbertengyo/tk_cipher/issues/2) | Scaffold project Python dan pytest | setup |  | `pyproject.toml` (uv, dependency group dev + analysis), `uv.lock`, `errors.py`, pytest | NFR-1, `uv run pytest` hijau | Selesai |
 | [#3](https://github.com/filbertengyo/tk_cipher/issues/3) | PRNG TKRand dan S-box dinamis | cipher | #2 | `prng.py`, `sbox.py`, filter DU/NL, inverse | FR-K1 sampai FR-K4, T-02 | Selesai |
 | [#4](https://github.com/filbertengyo/tk_cipher/issues/4) | Operasi ronde dan inverse-nya | cipher | #2 | `rounds.py`: 5 operasi ronde + inverse | T-01 | Selesai |
 | [#5](https://github.com/filbertengyo/tk_cipher/issues/5) | Key schedule 17 round key | cipher | #3, #4 | `key_schedule.py`, round constants, 17 round key | FR-K5, T-05 | Selesai |
