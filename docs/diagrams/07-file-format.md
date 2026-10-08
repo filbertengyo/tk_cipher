@@ -1,6 +1,6 @@
 # Diagram 07: Format File Ciphertext
 
-Penjelasan: `docs/DESIGN.md` Bagian 9. Ukuran dan posisi tiap field ada di `docs/blueprint.md`.
+Penjelasan: `docs/DESIGN.md` Bagian 9. Detail field ada di `src/tk_cipher/fileformat.py`.
 
 ## Isi file
 
