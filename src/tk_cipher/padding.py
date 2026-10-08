@@ -46,8 +46,8 @@ def unpad(data: bytes, block_size: int = 16) -> bytes:
 
     Raises:
         ValueError: `block_size` di luar 1 sampai 255
-        PaddingError: data kosong, panjang bukan kelipatan blok, byte terakhir 0,
-            atau byte padding tidak seragam
+        PaddingError: data kosong, panjang bukan kelipatan blok, byte terakhir 0
+            atau lebih dari `block_size`, atau byte padding tidak seragam
 
     Example:
         >>> unpad(b"abc\\x01", 4)
@@ -69,6 +69,9 @@ def unpad(data: bytes, block_size: int = 16) -> bytes:
 
     if pad_size < 1:
         raise PaddingError("Padding size (final byte) cannot be 0")
+
+    if pad_size > block_size:
+        raise PaddingError("Padding size (final byte) cannot exceed block size")
 
     for byte in data[-pad_size:]:
         if byte != pad_size:

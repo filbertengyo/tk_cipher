@@ -60,6 +60,24 @@ def test_unpad_last_byte_out_of_bounds_fails():
         _ = unpad(data, block_size=16)
 
 
+def test_unpad_uniform_padding_over_block_size_fails():
+    """unpad 17 byte 0x11 seragam di blok 16 => PaddingError, bukan data terpotong"""
+    data = b"A" * 15 + b"\x11" * 17
+    with pytest.raises(PaddingError, match="exceed block size"):
+        _ = unpad(data, block_size=16)
+
+
+def test_unpad_all_ff_block_fails():
+    """unpad blok penuh 0xFF => PaddingError"""
+    with pytest.raises(PaddingError, match="exceed block size"):
+        _ = unpad(b"\xff" * 32, block_size=16)
+
+
+def test_unpad_full_block_padding_ok():
+    """unpad blok padding penuh (16 byte 0x10) valid dan menghasilkan data kosong"""
+    assert unpad(b"\x10" * 16, block_size=16) == b""
+
+
 def test_unpad_non_uniform_padding_fails():
     """unpad byte pad tidak seragam => PaddingError"""
     data = b"A" * 13 + b"\x03\x02\x03"

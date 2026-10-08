@@ -108,8 +108,8 @@
 </span><span id="L-46"><a href="#L-46"><span class="linenos">46</span></a>
 </span><span id="L-47"><a href="#L-47"><span class="linenos">47</span></a><span class="sd">    Raises:</span>
 </span><span id="L-48"><a href="#L-48"><span class="linenos">48</span></a><span class="sd">        ValueError: `block_size` di luar 1 sampai 255</span>
-</span><span id="L-49"><a href="#L-49"><span class="linenos">49</span></a><span class="sd">        PaddingError: data kosong, panjang bukan kelipatan blok, byte terakhir 0,</span>
-</span><span id="L-50"><a href="#L-50"><span class="linenos">50</span></a><span class="sd">            atau byte padding tidak seragam</span>
+</span><span id="L-49"><a href="#L-49"><span class="linenos">49</span></a><span class="sd">        PaddingError: data kosong, panjang bukan kelipatan blok, byte terakhir 0</span>
+</span><span id="L-50"><a href="#L-50"><span class="linenos">50</span></a><span class="sd">            atau lebih dari `block_size`, atau byte padding tidak seragam</span>
 </span><span id="L-51"><a href="#L-51"><span class="linenos">51</span></a>
 </span><span id="L-52"><a href="#L-52"><span class="linenos">52</span></a><span class="sd">    Example:</span>
 </span><span id="L-53"><a href="#L-53"><span class="linenos">53</span></a><span class="sd">        &gt;&gt;&gt; unpad(b"abc\\x01", 4)</span>
@@ -132,11 +132,14 @@
 </span><span id="L-70"><a href="#L-70"><span class="linenos">70</span></a>    <span class="k">if</span> <span class="n">pad_size</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
 </span><span id="L-71"><a href="#L-71"><span class="linenos">71</span></a>        <span class="k">raise</span> <span class="n">PaddingError</span><span class="p">(</span><span class="s2">"Padding size (final byte) cannot be 0"</span><span class="p">)</span>
 </span><span id="L-72"><a href="#L-72"><span class="linenos">72</span></a>
-</span><span id="L-73"><a href="#L-73"><span class="linenos">73</span></a>    <span class="k">for</span> <span class="n">byte</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="n">pad_size</span><span class="p">:]:</span>
-</span><span id="L-74"><a href="#L-74"><span class="linenos">74</span></a>        <span class="k">if</span> <span class="n">byte</span> <span class="o">!=</span> <span class="n">pad_size</span><span class="p">:</span>
-</span><span id="L-75"><a href="#L-75"><span class="linenos">75</span></a>            <span class="k">raise</span> <span class="n">PaddingError</span><span class="p">(</span><span class="s2">"Padding bytes have to equal padding size"</span><span class="p">)</span>
-</span><span id="L-76"><a href="#L-76"><span class="linenos">76</span></a>
-</span><span id="L-77"><a href="#L-77"><span class="linenos">77</span></a>    <span class="k">return</span> <span class="n">data</span><span class="p">[:</span><span class="o">-</span><span class="n">pad_size</span><span class="p">]</span>
+</span><span id="L-73"><a href="#L-73"><span class="linenos">73</span></a>    <span class="k">if</span> <span class="n">pad_size</span> <span class="o">&gt;</span> <span class="n">block_size</span><span class="p">:</span>
+</span><span id="L-74"><a href="#L-74"><span class="linenos">74</span></a>        <span class="k">raise</span> <span class="n">PaddingError</span><span class="p">(</span><span class="s2">"Padding size (final byte) cannot exceed block size"</span><span class="p">)</span>
+</span><span id="L-75"><a href="#L-75"><span class="linenos">75</span></a>
+</span><span id="L-76"><a href="#L-76"><span class="linenos">76</span></a>    <span class="k">for</span> <span class="n">byte</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="n">pad_size</span><span class="p">:]:</span>
+</span><span id="L-77"><a href="#L-77"><span class="linenos">77</span></a>        <span class="k">if</span> <span class="n">byte</span> <span class="o">!=</span> <span class="n">pad_size</span><span class="p">:</span>
+</span><span id="L-78"><a href="#L-78"><span class="linenos">78</span></a>            <span class="k">raise</span> <span class="n">PaddingError</span><span class="p">(</span><span class="s2">"Padding bytes have to equal padding size"</span><span class="p">)</span>
+</span><span id="L-79"><a href="#L-79"><span class="linenos">79</span></a>
+</span><span id="L-80"><a href="#L-80"><span class="linenos">80</span></a>    <span class="k">return</span> <span class="n">data</span><span class="p">[:</span><span class="o">-</span><span class="n">pad_size</span><span class="p">]</span>
 </span></pre></div>
 
 
@@ -246,8 +249,8 @@ padding penuh, jadi <code><a href="#unpad">unpad</a></code> selalu tahu berapa b
 </span><span id="unpad-47"><a href="#unpad-47"><span class="linenos">47</span></a>
 </span><span id="unpad-48"><a href="#unpad-48"><span class="linenos">48</span></a><span class="sd">    Raises:</span>
 </span><span id="unpad-49"><a href="#unpad-49"><span class="linenos">49</span></a><span class="sd">        ValueError: `block_size` di luar 1 sampai 255</span>
-</span><span id="unpad-50"><a href="#unpad-50"><span class="linenos">50</span></a><span class="sd">        PaddingError: data kosong, panjang bukan kelipatan blok, byte terakhir 0,</span>
-</span><span id="unpad-51"><a href="#unpad-51"><span class="linenos">51</span></a><span class="sd">            atau byte padding tidak seragam</span>
+</span><span id="unpad-50"><a href="#unpad-50"><span class="linenos">50</span></a><span class="sd">        PaddingError: data kosong, panjang bukan kelipatan blok, byte terakhir 0</span>
+</span><span id="unpad-51"><a href="#unpad-51"><span class="linenos">51</span></a><span class="sd">            atau lebih dari `block_size`, atau byte padding tidak seragam</span>
 </span><span id="unpad-52"><a href="#unpad-52"><span class="linenos">52</span></a>
 </span><span id="unpad-53"><a href="#unpad-53"><span class="linenos">53</span></a><span class="sd">    Example:</span>
 </span><span id="unpad-54"><a href="#unpad-54"><span class="linenos">54</span></a><span class="sd">        &gt;&gt;&gt; unpad(b"abc\\x01", 4)</span>
@@ -270,11 +273,14 @@ padding penuh, jadi <code><a href="#unpad">unpad</a></code> selalu tahu berapa b
 </span><span id="unpad-71"><a href="#unpad-71"><span class="linenos">71</span></a>    <span class="k">if</span> <span class="n">pad_size</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
 </span><span id="unpad-72"><a href="#unpad-72"><span class="linenos">72</span></a>        <span class="k">raise</span> <span class="n">PaddingError</span><span class="p">(</span><span class="s2">"Padding size (final byte) cannot be 0"</span><span class="p">)</span>
 </span><span id="unpad-73"><a href="#unpad-73"><span class="linenos">73</span></a>
-</span><span id="unpad-74"><a href="#unpad-74"><span class="linenos">74</span></a>    <span class="k">for</span> <span class="n">byte</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="n">pad_size</span><span class="p">:]:</span>
-</span><span id="unpad-75"><a href="#unpad-75"><span class="linenos">75</span></a>        <span class="k">if</span> <span class="n">byte</span> <span class="o">!=</span> <span class="n">pad_size</span><span class="p">:</span>
-</span><span id="unpad-76"><a href="#unpad-76"><span class="linenos">76</span></a>            <span class="k">raise</span> <span class="n">PaddingError</span><span class="p">(</span><span class="s2">"Padding bytes have to equal padding size"</span><span class="p">)</span>
-</span><span id="unpad-77"><a href="#unpad-77"><span class="linenos">77</span></a>
-</span><span id="unpad-78"><a href="#unpad-78"><span class="linenos">78</span></a>    <span class="k">return</span> <span class="n">data</span><span class="p">[:</span><span class="o">-</span><span class="n">pad_size</span><span class="p">]</span>
+</span><span id="unpad-74"><a href="#unpad-74"><span class="linenos">74</span></a>    <span class="k">if</span> <span class="n">pad_size</span> <span class="o">&gt;</span> <span class="n">block_size</span><span class="p">:</span>
+</span><span id="unpad-75"><a href="#unpad-75"><span class="linenos">75</span></a>        <span class="k">raise</span> <span class="n">PaddingError</span><span class="p">(</span><span class="s2">"Padding size (final byte) cannot exceed block size"</span><span class="p">)</span>
+</span><span id="unpad-76"><a href="#unpad-76"><span class="linenos">76</span></a>
+</span><span id="unpad-77"><a href="#unpad-77"><span class="linenos">77</span></a>    <span class="k">for</span> <span class="n">byte</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="n">pad_size</span><span class="p">:]:</span>
+</span><span id="unpad-78"><a href="#unpad-78"><span class="linenos">78</span></a>        <span class="k">if</span> <span class="n">byte</span> <span class="o">!=</span> <span class="n">pad_size</span><span class="p">:</span>
+</span><span id="unpad-79"><a href="#unpad-79"><span class="linenos">79</span></a>            <span class="k">raise</span> <span class="n">PaddingError</span><span class="p">(</span><span class="s2">"Padding bytes have to equal padding size"</span><span class="p">)</span>
+</span><span id="unpad-80"><a href="#unpad-80"><span class="linenos">80</span></a>
+</span><span id="unpad-81"><a href="#unpad-81"><span class="linenos">81</span></a>    <span class="k">return</span> <span class="n">data</span><span class="p">[:</span><span class="o">-</span><span class="n">pad_size</span><span class="p">]</span>
 </span></pre></div>
 
 
@@ -297,8 +303,8 @@ padding penuh, jadi <code><a href="#unpad">unpad</a></code> selalu tahu berapa b
 
 <ul>
 <li><strong>ValueError:</strong>  <code>block_size</code> di luar 1 sampai 255</li>
-<li><strong>PaddingError:</strong>  data kosong, panjang bukan kelipatan blok, byte terakhir 0,
-atau byte padding tidak seragam</li>
+<li><strong>PaddingError:</strong>  data kosong, panjang bukan kelipatan blok, byte terakhir 0
+atau lebih dari <code>block_size</code>, atau byte padding tidak seragam</li>
 </ul>
 
 <h6 id="example">Example:</h6>
