@@ -1,6 +1,6 @@
 # Diagram 05: Mode Operasi
 
-Penjelasan: `docs/DESIGN.md` Bagian 6. Rumus lengkap: `docs/blueprint.md` Bagian 4. `E` = enkripsi blok TK-Cipher berkunci key enkripsi, `D` = dekripsi blok. Indeks blok mulai dari 0.
+Penjelasan: `docs/DESIGN.md` Bagian 6. Rumus tiap mode ada di catatan di bawah diagramnya. `E` = enkripsi blok TK-Cipher berkunci key enkripsi, `D` = dekripsi blok. Indeks blok mulai dari 0.
 
 ## ECB
 

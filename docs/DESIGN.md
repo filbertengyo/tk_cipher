@@ -2,8 +2,8 @@
 
 Gambaran umum desain TK-Cipher: alur enkripsi dan dekripsi, struktur ronde, key schedule, S-box, mode operasi, padding, dan integritas. Dokumen ini menjelaskan **ide dan alasan** setiap komponen. Isinya menjadi bahan Bab 5 (Perancangan) laporan.
 
-- Konstanta dan detail implementasi: `docs/blueprint.md`.
-- Requirement teknis dan test: `docs/trd.md`.
+- Konstanta dan detail implementasi: kode di `src/tk_cipher/` dan API docs di `docs/api/`.
+- Test: `tests/`.
 - Angka hasil pengukuran (avalanche, entropi, histogram, dll.): dihasilkan skrip di `analysis/`, disimpan di `tests/results/`, dibahas di Bab 7 laporan.
 
 Diagram ada di `docs/diagrams/`:
@@ -169,7 +169,7 @@ File ciphertext bersifat **self-describing**, sehingga dekripsi cukup butuh file
 2. **Ciphertext.**
 3. **Tag MAC.**
 
-Header ikut dilindungi MAC, jadi mengubah mode, IV, atau panjang juga terdeteksi. Ukuran dan posisi tiap field ada di `docs/blueprint.md`.
+Header ikut dilindungi MAC, jadi mengubah mode, IV, atau panjang juga terdeteksi. Header berukuran 32 byte dengan urutan magic (4), versi (1), mode (1), reserved (2), IV atau counter (16), dan panjang asli (8). Detail field ada di `src/tk_cipher/fileformat.py`.
 
 ---
 
@@ -181,7 +181,7 @@ Program berupa CLI dengan tiga perintah: enkripsi, dekripsi, dan pembangkitan ke
 
 ## 11. Klaim Desain dan Hasil Ukur
 
-Semua klaim desain di dokumen ini sudah diukur pada implementasi akhir (`docs/trd.md` Bagian 8). Angka lengkapnya ada di `tests/results/` dan bisa dibuat ulang dengan `uv run python analysis/run_all.py`.
+Semua klaim desain di dokumen ini sudah diukur pada implementasi akhir. Angka lengkapnya ada di `tests/results/` dan bisa dibuat ulang dengan `uv run python analysis/run_all.py`.
 
 | Klaim desain                                | Dibuktikan oleh                                         |
 | ------------------------------------------- | ------------------------------------------------------- |
