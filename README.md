@@ -183,8 +183,6 @@ chmod +x dist/tk-cipher-linux
 .\dist\tk-cipher-windows.exe enc -i tests\data\text_small.txt -o out.enc -m cbc --key-file key.txt
 ```
 
-Build ulang executable ada di [`docs/build_exe.md`](docs/build_exe.md), atau jalankan workflow `build-exe` di tab Actions.
-
 ### Test dan analisis
 
 ```bash
@@ -257,8 +255,7 @@ tk_cipher/
 ├── docs/
 │   ├── DESIGN.md         # desain dan alasannya
 │   ├── diagrams/         # diagram Mermaid
-│   ├── api/              # API docs hasil pdoc (GitHub Pages)
-│   └── build_exe.md      # cara build executable
+│   └── api/              # API docs hasil pdoc (GitHub Pages)
 ├── tools/                # skrip build API docs
 ├── dist/                 # executable Linux dan Windows
 ├── tk-cipher.spec        # spec PyInstaller
