@@ -4,7 +4,7 @@
 **Proyek:** IF4020 Tugas 2, Custom Block Cipher
 **Acuan:** spesifikasi tugas IF4020 Tugas 2 (sumber kebenaran), `docs/blueprint.md` (rancangan)
 **Deadline:** Sabtu, 10 Oktober 2026, 23.59 WIB (release GitHub)
-**Status:** Development selesai. Semua requirement terimplementasi dan diuji, tinggal laporan (#23), video (#24), dan release (#25).
+**Status:** Development selesai. Semua requirement terimplementasi dan diuji, laporan disusun di luar repo, video dibatalkan (#24), dan release GitHub (#25) dibuat satu kali setelah laporan final. Tim memakai Linux, jadi E2E lewat CLI dijalankan di Linux dan Windows dicakup lewat CI (pytest di `windows-latest`).
 
 ---
 
@@ -17,7 +17,7 @@ Membangun **TK-Cipher**, block cipher SPN 128-bit buatan sendiri, beserta:
 3. Suite unit test (`tests/`) dan suite analisis keamanan (`analysis/`) yang hasilnya tersimpan di `tests/results/`.
 4. Dokumentasi: `README.md`, `docs/DESIGN.md` + `docs/diagrams/`, draft laporan, dan API docs ter-host.
 5. Executable untuk Linux dan Windows di `dist/` dan di GitHub Release.
-6. Video demo (dikerjakan manual oleh anggota).
+6. Video demo dibatalkan, tidak dikerjakan.
 
 **Di luar scope:** GUI, mode AEAD lain (GCM dsb.), passphrase/password hashing, streaming file yang lebih besar dari RAM. Cover, foto, dan tanda tangan laporan dikerjakan manual.
 
@@ -28,7 +28,7 @@ Membangun **TK-Cipher**, block cipher SPN 128-bit buatan sendiri, beserta:
 | Item bonus/opsional di spec                    | Sumber spec    | Di TRD           | Issue       |
 | ---------------------------------------------- | -------------- | ---------------- | ----------- |
 | API documentation ter-host (+5)                | Bagian 6       | Bagian 9, FR-D1  | #20         |
-| Video demo                                     | Bagian 6, 5.10 | Bagian 9         | #24         |
+| Video demo (dibatalkan)                        | Bagian 6, 5.10 | Bagian 9         | #24         |
 | Executable                                     | Bagian 4       | NFR-8            | #21         |
 | File kecil / sedang / besar (performa + hasil) | Bagian 3.4     | T-14, A-08       | #12, #19    |
 | Round-trip test                                | Bagian 3.4     | T-03, T-08, T-14 | #6, #8, #13 |
@@ -152,7 +152,7 @@ tk-cipher keygen [--bits {128,192,256}]
 | FR-D2 | API docs memuat untuk setiap fungsi/kelas publik: deskripsi, parameter + tipe data, return + tipe data, exception, contoh pemakaian, catatan. |
 | FR-D3 | README dan laporan menjelaskan tools yang dipakai untuk API docs (pdoc + GitHub Pages) dan cara membangunnya ulang.                           |
 | FR-D4 | Executable single-file untuk Linux dan Windows dibangun dengan PyInstaller, berjalan tanpa Python terpasang, perilaku sama dengan CLI.        |
-| FR-D5 | Video demo memperlihatkan enc/dec 5 mode (teks + biner), padding, tamper test, wrong key, dan hasil analisis. Dikerjakan manual oleh anggota. |
+| FR-D5 | Dibatalkan. Video demo tidak dikerjakan dan tidak ada link video di laporan. |
 
 ---
 
@@ -329,7 +329,7 @@ Semua test dijalankan dengan `pytest` dari root. Test yang lambat (key avalanche
 | T-17 | File terpotong (< 64 byte, panjang tidak pas)                                                                               | `InvalidFormatError`                                                    |
 | T-18 | CLI: enc/dec semua mode, IV auto vs manual, `--iv` di ECB ditolak, key invalid, exit code 0/1/2/3                           | Sesuai FR-U                                                             |
 | T-19 | Larangan import: scan AST semua file `src/` untuk `hashlib`, `hmac`, `secrets`, `random`, `Crypto`, `cryptography`, `numpy` | Tidak ditemukan                                                         |
-| T-20  | E2E: `tests/e2e/run_e2e.py` menjalankan keygen, enc/dec semua sample x 5 mode, tamper, wrong key, argumen salah lewat `python -m tk_cipher` dan executable | Semua skenario lulus di Linux dan Windows |
+| T-20  | E2E: `tests/e2e/run_e2e.py` menjalankan keygen, enc/dec semua sample x 5 mode, tamper, wrong key, argumen salah lewat `python -m tk_cipher` dan executable | Semua skenario lulus di Linux, Windows dicakup CI (pytest) |
 
 ---
 
@@ -364,7 +364,7 @@ Ekspektasi yang harus dijelaskan di laporan (bukan bug):
 | `README.md`      | Nama + deskripsi, tech stack, dependensi, cara install/run, contoh enc/dec untuk 5 mode, cara run test & analisis, link API docs.                                                                                                                                                      |
 | `docs/DESIGN.md` | Gambaran umum desain: ide dan alasan tiap komponen (ronde, key setup, mode, padding, integritas, format file), perbedaan dengan AES, dan klaim yang dibuktikan analisis. Tanpa konstanta (ada di blueprint) dan tanpa angka hasil ukur (ada di `tests/results/`). Bahan Bab 5 laporan. |
 | `docs/diagrams/` | 8 file diagram Mermaid (alur file, cipher, operasi state, key setup, mode, KDF/MAC, format file, CLI/modul), dirujuk dari DESIGN.md.                                                                                                                                                   |
-| Draft laporan    | Bab 3 sampai 9 sesuai sistematika spec, mengambil isi dari DESIGN.md dan `tests/results/`. Cover, pernyataan keaslian, foto, tanda tangan, video diisi manual.                                                                                                                         |
+| Draft laporan    | Bab 3 sampai 9 sesuai sistematika spec, mengambil isi dari DESIGN.md dan `tests/results/`. Cover, pernyataan keaslian, foto, tanda tangan diisi manual.                                                                                                                         |
 | API docs         | Dibangkitkan dari docstring (pdoc), di-deploy ke GitHub Pages. Isi: deskripsi, parameter + tipe data, return, raises, contoh, catatan. Tools dijelaskan di README.                                                                                                                     |
 
 ---
@@ -379,7 +379,7 @@ Ekspektasi yang harus dijelaskan di laporan (bukan bug):
 | Rab 7 Okt  | `cli`, sample data, uji di Windows                                                         | T-18, T-19 lulus, demo 5 mode jalan |
 | Kam 8 Okt  | Semua skrip analisis + hasil di `tests/results/`                                           | A-01 sampai A-08 lengkap            |
 | Jum 9 Okt  | E2E test, API docs ter-host, README, verifikasi final, mulai draft laporan                 | Development selesai (#27 closed)    |
-| Sab 10 Okt | Executable Linux + Windows, video demo, review akhir, **release GitHub sebelum 20.00 WIB** | Release + link di Google Form       |
+| Sab 10 Okt | Executable Linux + Windows, review akhir, **release GitHub sebelum 20.00 WIB** | Release + link di Google Form       |
 
 Pembagian peran (sesuaikan dengan anggota):
 
@@ -407,7 +407,7 @@ Pembagian peran (sesuaikan dengan anggota):
 | Program input/output, Linux/Windows                                                   | FR-U1 sampai FR-U7, NFR-2        | T-18, T-20, CI 2 OS            |
 | Avalanche, entropi, histogram di 5 mode                                               | Bagian 8                         | A-01 sampai A-05               |
 | README, laporan                                                                       | Bagian 9                         | Review akhir                   |
-| Bonus: API docs, video, executable                                                    | FR-D1 sampai FR-D5, NFR-8        | #20, #21, #24                  |
+| Bonus: API docs, executable                                                           | FR-D1 sampai FR-D4, NFR-8        | #20, #21                       |
 | Item opsional spec (wajib bagi kita): chi-square, benchmark, ukuran file, test vector | Bagian 1.1, 7, 8                 | A-06, A-08, T-04, T-14         |
 
 ---
@@ -422,7 +422,7 @@ Pembagian peran (sesuaikan dengan anggota):
 - [x] API docs ter-host dan link ada di README.
 - [x] Executable Linux dan Windows ada di `dist/`.
 - [ ] Executable dilampirkan di GitHub Release.
-- [ ] Video demo selesai dan link ada di laporan.
+- [x] Video demo dibatalkan, tidak ada link video di laporan.
 - [ ] Semua issue di Bagian 13 closed.
 - [ ] Release GitHub dibuat sebelum 10 Oktober 2026 23.59 WIB.
 
@@ -458,9 +458,9 @@ Label tahapan: `setup`, `cipher`, `modes`, `integrity`, `program`, `testing`, `a
 | [#21](https://github.com/filbertengyo/tk_cipher/issues/21) | Executable Linux dan Windows | release, bonus | #11 | PyInstaller, Windows dibangun lewat workflow `build-exe` | FR-D4, NFR-8 | Selesai |
 | [#22](https://github.com/filbertengyo/tk_cipher/issues/22) | README | docs | #11, #20, #21 | `README.md` | Bagian 9 | Selesai |
 | [#23](https://github.com/filbertengyo/tk_cipher/issues/23) | Draft laporan Bab 3 sampai 9 | docs | #13, #14, #15, #16, #17, #18, #19, #27 | `docs/draft_laporan.md`, export diagram PNG | Bagian 9 | Open |
-| [#24](https://github.com/filbertengyo/tk_cipher/issues/24) | Video demo | release, bonus, manual | #13, #14, #15, #16, #17, #18, #19, #27 | rekam demo, link di laporan | FR-D5 | Open |
+| [#24](https://github.com/filbertengyo/tk_cipher/issues/24) | Video demo | release, bonus, manual | #13, #14, #15, #16, #17, #18, #19, #27 | rekam demo, link di laporan | FR-D5 | Closed (dibatalkan) |
 | [#25](https://github.com/filbertengyo/tk_cipher/issues/25) | Release GitHub dan submit Google Form | release | #13, #14, #15, #16, #17, #18, #19, #20, #21, #22, #23, #24, #26, #27 | tag, release, executable, Google Form | Bagian 12 | Open |
 | [#26](https://github.com/filbertengyo/tk_cipher/issues/26) | End-to-end test lewat CLI dan executable | testing | #11, #12, #21 | `tests/e2e/run_e2e.py` untuk python dan executable | T-20 | Selesai |
 | [#27](https://github.com/filbertengyo/tk_cipher/issues/27) | Verifikasi final dan sinkron docs sebelum laporan | testing, docs | #13, #14, #15, #16, #17, #18, #19, #20, #21, #22, #26 | fresh run 2 OS, `analysis/run_all.py`, sinkron docs, cek DoD | Bagian 12 kecuali laporan dan video | Selesai |
 
-Urutan kritis: #2 => #3/#4 => #5 => #6 => #8/#9 => #10 => #11 => #21 => #26 => #27 => #23/#24 => #25. Begitu #27 selesai, development udah tutup dan yang tersisa cuma laporan (#23), video (#24), dan release (#25).
+Urutan kritis: #2 => #3/#4 => #5 => #6 => #8/#9 => #10 => #11 => #21 => #26 => #27 => #23 => #25. Begitu #27 selesai, development udah tutup dan yang tersisa cuma laporan (#23) dan release (#25). Video (#24) dibatalkan.

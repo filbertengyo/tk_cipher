@@ -22,3 +22,8 @@ Thumbs.db
 # Local only, not committed
 context/
 CLAUDE.md
+
+# Key dan hasil enkripsi lokal, jangan sampai ter-commit
+key.txt
+*.enc
+*.key
