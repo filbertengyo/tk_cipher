@@ -156,7 +156,7 @@ uv run tk-cipher dec -i out.ctr -o back.txt -k 00112233445566778899aabbccddeeff
 
 `python -m tk_cipher ...` sama dengan `tk-cipher ...`.
 
-> **Peringatan:** jangan pakai ulang IV atau counter yang sama dengan key yang sama di mode **OFB** dan **CTR**. Keystream-nya jadi sama dan XOR dua ciphertext langsung membocorkan XOR dua plaintext. Biarkan `--iv` kosong supaya IV dibuat acak.
+> Jangan pakai ulang IV atau counter yang sama dengan key yang sama di mode **OFB** dan **CTR**. Keystream-nya jadi sama dan XOR dua ciphertext langsung membocorkan XOR dua plaintext. Biarkan `--iv` kosong supaya IV dibuat acak.
 
 ### Exit code
 
