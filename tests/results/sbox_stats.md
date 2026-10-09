@@ -1,4 +1,4 @@
-# Statistik S-box Dinamis (A-07)
+# Statistik S-box Dinamis
 
 Skrip: `analysis/sbox_stats.py`, seed `20261006`. Data: `sbox_stats.csv` (per key) dan `sbox_candidates.csv` (kandidat sebelum filter).
 

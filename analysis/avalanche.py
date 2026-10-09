@@ -1,5 +1,3 @@
-"""A-01 dan A-02: avalanche flip 1 bit plaintext dan flip 1 bit key di kelima mode"""
-
 import argparse
 import csv
 import pathlib
@@ -187,7 +185,7 @@ def write_summary(
         f"Seed: `{seed}`. Semua nilai dalam persen bit ciphertext yang berubah, ideal sekitar 50%.",
         "Dibuat oleh `analysis/avalanche.py`, data mentah di `avalanche_plaintext.csv` dan `avalanche_key.csv`.",
         "",
-        "## A-01 Flip 1 bit plaintext",
+        "## Flip 1 bit plaintext",
         "",
         f"{PT_SAMPLES} sampel per mode, key 128-bit acak, plaintext {BLOCKS} blok, IV sama untuk dua run.",
         "",
@@ -225,7 +223,7 @@ def write_summary(
     lines += ["", "Satu bit dari 128 bit adalah " + f"{ONE_BIT_PCT:.2f}%.", ""]
 
     lines += [
-        "## A-02 Flip 1 bit key",
+        "## Flip 1 bit key",
         "",
         "Plaintext dan IV sama, master key beda 1 bit. Ukuran key bergantian 128, 192, 256-bit.",
         f"Jalur `cipher` adalah `TKCipher` plus mode ({KEY_SAMPLES} sampel per mode), jalur `full` adalah",
@@ -258,7 +256,7 @@ def write_summary(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser()
     parser.add_argument("--seed", type=int, default=SEED)
     parser.add_argument("--workers", type=int, default=None)
     args = parser.parse_args()

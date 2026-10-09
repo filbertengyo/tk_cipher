@@ -1,5 +1,3 @@
-"""A-03: avalanche dan dependency bit per jumlah ronde 1..16 untuk justifikasi 16 ronde"""
-
 import argparse
 import csv
 import pathlib
@@ -133,7 +131,7 @@ def write_summary(
 ) -> None:
     n = rows[0]["samples"]
     lines = [
-        "# Round Diffusion (A-03)",
+        "# Round Diffusion",
         "",
         (
             f"Skrip: `analysis/round_diffusion.py`, seed `{seed}`. Data: "
@@ -209,7 +207,7 @@ def write_summary(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser = argparse.ArgumentParser()
     parser.add_argument("--seed", type=int, default=SEED)
     seed = parser.parse_args().seed
 

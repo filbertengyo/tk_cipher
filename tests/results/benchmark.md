@@ -1,4 +1,4 @@
-# Benchmark (A-08)
+# Benchmark
 
 Seed: `20261006`. Dibuat oleh `analysis/benchmark.py`.
 
