@@ -1,5 +1,3 @@
-"""A-07: statistik S-box dinamis (DU, NL, attempts, waktu) dan review threshold"""
-
 import argparse
 import csv
 import pathlib
@@ -129,7 +127,7 @@ def write_summary(
     weak_nl = sum(c["nonlinearity"] < MIN_NL for c in cands)
 
     lines = [
-        "# Statistik S-box Dinamis (A-07)",
+        "# Statistik S-box Dinamis",
         "",
         (
             f"Skrip: `analysis/sbox_stats.py`, seed `{seed}`. Data: "
@@ -226,7 +224,7 @@ def write_summary(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser = argparse.ArgumentParser()
     parser.add_argument("--seed", type=int, default=SEED)
     seed = parser.parse_args().seed
 

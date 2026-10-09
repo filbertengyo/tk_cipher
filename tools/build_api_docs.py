@@ -1,4 +1,4 @@
-"""Build API docs pakai pdoc ke docs/api lalu buang comment bawaan pdoc di HTML"""
+"""Build API docs pakai pdoc ke docs/api lalu buang comment bawaan pdoc di HTML dan search.js"""
 
 import pathlib
 import re
@@ -11,6 +11,7 @@ OUT = ROOT / "docs" / "api"
 STYLE = re.compile(r"(<style[^>]*>)(.*?)(</style>)", re.DOTALL)
 CSS_COMMENT = re.compile(r"/\*.*?\*/", re.DOTALL)
 HTML_COMMENT = re.compile(r"<!--.*?-->", re.DOTALL)
+JS_COMMENT = re.compile(r"/\*.*?\*/", re.DOTALL)
 
 
 def strip_comments(html: str) -> str:
@@ -41,6 +42,10 @@ def main() -> int:
         page.write_text(
             strip_comments(page.read_text(encoding="utf-8")), encoding="utf-8"
         )
+    search = OUT / "search.js"
+    search.write_text(
+        JS_COMMENT.sub("", search.read_text(encoding="utf-8")), encoding="utf-8"
+    )
     print(f"API docs di {OUT.relative_to(ROOT)}")
     return 0
 

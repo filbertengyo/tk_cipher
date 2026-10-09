@@ -1,4 +1,4 @@
-# Entropi dan Chi-square (A-04, A-06)
+# Entropi dan Chi-square
 
 Skrip: `analysis/entropy.py`, seed `20261006` (key `5c47ab7e4c73d1147e1a8dac21b05d49`, IV `1087cbea3edfe749d9dd83827edb7732`). Data: `entropy.csv` dan `chi_square.csv`.
 

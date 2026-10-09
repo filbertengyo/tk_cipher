@@ -1,5 +1,3 @@
-"""A-05: histogram byte plaintext vs ciphertext per file dan mode, plus visual ECB vs CBC"""
-
 import argparse
 import pathlib
 import random
@@ -129,7 +127,7 @@ def ecb_vs_cbc(key: bytes, iv: bytes, seed: int) -> list[str]:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser()
     parser.add_argument("--seed", type=int, default=SEED)
     parser.add_argument("--workers", type=int, default=None)
     args = parser.parse_args()

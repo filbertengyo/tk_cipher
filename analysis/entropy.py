@@ -1,5 +1,3 @@
-"""A-04 dan A-06: entropi Shannon plaintext vs ciphertext dan chi-square byte ciphertext"""
-
 import argparse
 import csv
 import pathlib
@@ -101,7 +99,7 @@ def write_summary(
     path: pathlib.Path,
 ) -> None:
     lines = [
-        "# Entropi dan Chi-square (A-04, A-06)",
+        "# Entropi dan Chi-square",
         "",
         (
             f"Skrip: `analysis/entropy.py`, seed `{seed}` (key `{key.hex()}`, IV "
@@ -219,7 +217,7 @@ def write_summary(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser = argparse.ArgumentParser()
     parser.add_argument("--seed", type=int, default=SEED)
     parser.add_argument(
         "--include-large", action="store_true", help="ikutkan large.bin (lama)"

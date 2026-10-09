@@ -1,5 +1,3 @@
-"""Jalankan semua skrip analisis dengan seed default biar tests/results bisa dibuat ulang sekaligus"""
-
 import pathlib
 import subprocess
 import sys

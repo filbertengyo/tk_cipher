@@ -3,7 +3,7 @@
 Seed: `20261006`. Semua nilai dalam persen bit ciphertext yang berubah, ideal sekitar 50%.
 Dibuat oleh `analysis/avalanche.py`, data mentah di `avalanche_plaintext.csv` dan `avalanche_key.csv`.
 
-## A-01 Flip 1 bit plaintext
+## Flip 1 bit plaintext
 
 1000 sampel per mode, key 128-bit acak, plaintext 4 blok, IV sama untuk dua run.
 
@@ -59,7 +59,7 @@ Dibuat oleh `analysis/avalanche.py`, data mentah di `avalanche_plaintext.csv` da
 
 Satu bit dari 128 bit adalah 0.78%.
 
-## A-02 Flip 1 bit key
+## Flip 1 bit key
 
 Plaintext dan IV sama, master key beda 1 bit. Ukuran key bergantian 128, 192, 256-bit.
 Jalur `cipher` adalah `TKCipher` plus mode (300 sampel per mode), jalur `full` adalah

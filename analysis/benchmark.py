@@ -1,5 +1,3 @@
-"""A-08: benchmark throughput enc dan dec file kecil, sedang, besar x 5 mode plus waktu key setup"""
-
 import argparse
 import csv
 import os
@@ -117,7 +115,7 @@ def write_outputs(rows: list[dict], keys: list[dict], seed: int) -> None:
         writer.writerows(rows)
 
     lines = [
-        "# Benchmark (A-08)",
+        "# Benchmark",
         "",
         f"Seed: `{seed}`. Dibuat oleh `analysis/benchmark.py`.",
         "",
@@ -156,7 +154,7 @@ def write_outputs(rows: list[dict], keys: list[dict], seed: int) -> None:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser()
     parser.add_argument("--seed", type=int, default=SEED)
     args = parser.parse_args()
 

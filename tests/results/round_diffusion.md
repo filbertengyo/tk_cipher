@@ -1,4 +1,4 @@
-# Round Diffusion (A-03)
+# Round Diffusion
 
 Skrip: `analysis/round_diffusion.py`, seed `20261005`. Data: `round_diffusion.csv`, grafik: `round_diffusion.png`.
 
